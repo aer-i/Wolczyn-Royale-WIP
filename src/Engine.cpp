@@ -8,15 +8,13 @@ static constexpr const char* g_t = "Light Frame";
 static constexpr unsigned g_sw = 1280, g_sh = 720;
 
 Engine::Engine() noexcept
-    :
-    m_wn{
+    : m_wn{
         arln::WindowCreateInfo{
             .size = { g_sw, g_sh },
             .title = g_t,
             .errorCallback = errC
         }
-    },
-    m_cx{
+    }, m_cx{
         arln::ContextCreateInfo{
             .errorCallback = errC,
             .infoCallback = infC,
@@ -30,15 +28,13 @@ Engine::Engine() noexcept
             .applicationName = g_t,
             .engineName = g_t,
         }
-    }
+    }, m_rn{ m_cx }
 {}
 
-auto Engine::exe() noexcept -> v0
-{
-    while (not m_wn.shouldClose())
-    {
+auto Engine::exe() noexcept -> v0 {
+    while (not m_wn.shouldClose()) {
         m_wn.pollEvents();
-
-
+        if (m_cx.canRender()) {
+            m_rn.drF(); }
     }
 }
