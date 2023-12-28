@@ -1,0 +1,3 @@
+[submodule "vendor/ARLN"]
+	path = vendor/ARLN
+	url = https://github.com/aer-i/ARLN.git
