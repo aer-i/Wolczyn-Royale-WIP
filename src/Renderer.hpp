@@ -10,4 +10,5 @@ public:
     auto drF() noexcept -> v0;
 private:
     arln::Context& m_ctx;
+    arln::CommandBuffer m_cmd{};
 };
