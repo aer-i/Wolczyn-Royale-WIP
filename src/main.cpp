@@ -1,11 +1,6 @@
-#include <Arln.hpp>
+#include "Engine.hpp"
 
-int main()
+auto main() -> signed
 {
-    arln::Window window({});
-
-    while (!window.shouldClose())
-    {
-        window.pollEvents();
-    }
+    Engine en;en.exe();
 }
