@@ -19,10 +19,11 @@ auto Renderer::drF(Scene& t_rnS) noexcept -> v0 {
         m_cmd.beginRendering(arln::RenderingInfo{
             .pColorAttachment = &cAtt
         });
-        for (auto& m : t_rnS.gMt()) {
-            m_cmd.bindGraphicsPipeline(m);
+        for (auto& m : t_rnS.gMhs()) {
+            m_cmd.bindGraphicsPipeline(m.mts);
             m_cmd.setScissor(0, 0, m_wnd.getWidth(), m_wnd.getHeight());
             m_cmd.setViewport(0, (arln::f32)m_wnd.getHeight(), (arln::f32)m_wnd.getWidth(), -(arln::f32)m_wnd.getHeight());
+            m_cmd.pushConstant(m.mts, arln::ShaderStageBits::eVertex, 8, m.vb.getDeviceAddress());
             m_cmd.draw(3);
         } m_cmd.endRendering();
         m_cmd.end();

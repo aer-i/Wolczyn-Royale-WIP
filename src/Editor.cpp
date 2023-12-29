@@ -10,7 +10,26 @@ Editor::~Editor() noexcept {
 }
 
 auto Editor::e() noexcept -> v0 {
-    ImGui::ShowMetricsWindow();
+    auto const* v = ImGui::GetMainViewport();
+    ImVec2 wp, wpp;
+    wp.x = v->WorkPos.x + 10; wp.y = v->WorkPos.y + 10;
+    wpp.x = {0}; wpp.y = {0};
+    ImGui::SetNextWindowPos(wp, ImGuiCond_Always, wpp);
+    ImGui::SetNextWindowViewport(v->ID);
+    ImGui::SetNextWindowBgAlpha(0.35f);
+    if (ImGui::Begin("f", nullptr,
+        ImGuiWindowFlags_NoDecoration |
+        ImGuiWindowFlags_NoDocking |
+        ImGuiWindowFlags_AlwaysAutoResize |
+        ImGuiWindowFlags_NoSavedSettings |
+        ImGuiWindowFlags_NoFocusOnAppearing |
+        ImGuiWindowFlags_NoNav |
+        ImGuiWindowFlags_NoMove
+    ))
+    {
+        ImGui::Text("Fps overlay\nfps: %u", m_wnd.getFps());
+    }
+    ImGui::End();
 }
 
 auto Editor::r() noexcept -> v0 {

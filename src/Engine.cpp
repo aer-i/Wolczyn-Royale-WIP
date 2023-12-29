@@ -30,6 +30,11 @@ Engine::Engine() noexcept
 { m_ss.emplace_back(m_cx);}
 
 auto Engine::exe() noexcept -> v0 {
+
+    m_ss.back().lm(
+        { Vertex{.pos = {0, 0.5, 0}}, Vertex{.pos = {0.5, -0.5, 0}},
+          Vertex{.pos = {-0.5, -0.5, 0}}}, { 0, 1, 2 }
+    );
     while (not m_wn.shouldClose()) {
         m_wn.pollEvents();
         if (m_cx.canRender()) {

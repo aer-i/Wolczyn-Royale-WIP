@@ -1,2 +1,2 @@
 #include "Engine.hpp"
-auto main() -> signed { Engine en;en.exe(); }
+auto main() -> signed { Engine().exe(); }
