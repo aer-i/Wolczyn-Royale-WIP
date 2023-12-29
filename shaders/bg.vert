@@ -15,6 +15,7 @@ layout(buffer_reference, std430) readonly buffer VertexBuffer{
 
 layout(push_constant) uniform PushConstant
 {
+    mat4 projectionView;
     VertexBuffer vertexBuffer;
 } pc;
 
@@ -22,5 +23,5 @@ void main()
 {
     Vertex v = pc.vertexBuffer.vertices[gl_VertexIndex];
 
-    gl_Position = vec4(v.pos, 1);
+    gl_Position = pc.projectionView * vec4(v.pos, 1);
 }

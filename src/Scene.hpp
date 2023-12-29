@@ -1,5 +1,5 @@
 #pragma once
-#include <Arln.hpp>
+#include "Camera.hpp"
 
 struct Vertex
 {
@@ -18,6 +18,11 @@ class Scene
 {
     using v0 = void;
 public:
+    struct PD {
+        arln::mat4 pv;
+        arln::u64 dp;
+    };
+public:
     explicit Scene(arln::Context& t_c) noexcept;
     ~Scene() noexcept;
     inline auto& gMhs() noexcept {
@@ -26,5 +31,6 @@ public:
     auto lm(std::vector<Vertex> const& t_v, std::vector<arln::u32> const& t_i) noexcept -> v0;
 private:
     arln::Context& m_ctx;
+    Camera m_cm;
     std::vector<Mesh> m_mhs;
 };

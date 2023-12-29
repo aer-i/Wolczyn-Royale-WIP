@@ -16,7 +16,7 @@ Scene::~Scene() noexcept {
 auto Scene::lm(const std::vector<Vertex>& t_v, const std::vector<arln::u32>& t_i) noexcept -> v0 {
     auto pi = arln::GraphicsPipelineInfo{
         .vertShaderPath = "shaders/bg.vert.spv", .fragShaderPath = "shaders/bg.frag.spv"
-    }; pi.pushConstants << arln::PushConstantRange(arln::ShaderStageBits::eVertex, 8, 0);
+    }; pi.pushConstants << arln::PushConstantRange(arln::ShaderStageBits::eVertex, sizeof(PD), 0);
     auto vb = m_ctx.allocateBuffer(arln::BufferUsageBits::eStorageBuffer, arln::MemoryType::eGpu, t_v.size() * sizeof(t_v[0]));
     vb.writeData(t_v.data(), vb.getSize());
     m_mhs.emplace_back(m_ctx.createGraphicsPipeline(pi), vb);
