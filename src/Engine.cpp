@@ -27,7 +27,7 @@ Engine::Engine() noexcept
             .applicationName = g_t, .engineName = g_t,
         }
     }, m_rn{ m_wn, m_cx }
-{ m_ss.emplace_back();}
+{ m_ss.emplace_back(m_cx);}
 
 auto Engine::exe() noexcept -> v0 {
     while (not m_wn.shouldClose()) {

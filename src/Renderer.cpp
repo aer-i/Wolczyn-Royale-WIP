@@ -6,8 +6,7 @@ Renderer::Renderer(arln::Window& t_w, arln::Context& t_c) noexcept : m_wnd{ t_w 
 }
 
 auto Renderer::drF(Scene& t_rnS) noexcept -> v0 {
-    m_ctx.beginFrame();
-    {
+    m_ctx.beginFrame(); {
         auto cAtt = arln::ColorAttachmentInfo {
             .clearColor = { .75f, .25f, .5f, 1.f},
             .image = m_ctx.getPresentImage()
@@ -20,10 +19,13 @@ auto Renderer::drF(Scene& t_rnS) noexcept -> v0 {
         m_cmd.beginRendering(arln::RenderingInfo{
             .pColorAttachment = &cAtt
         });
-
-        m_cmd.endRendering();
+        for (auto& m : t_rnS.gMt()) {
+            m_cmd.bindGraphicsPipeline(m);
+            m_cmd.setScissor(0, 0, m_wnd.getWidth(), m_wnd.getHeight());
+            m_cmd.setViewport(0, (arln::f32)m_wnd.getHeight(), (arln::f32)m_wnd.getWidth(), -(arln::f32)m_wnd.getHeight());
+            m_cmd.draw(3);
+        } m_cmd.endRendering();
         m_cmd.end();
-    }
-    m_ed.r();
+    } m_ed.r();
     m_ctx.endFrame({ m_cmd, m_ed.gc() });
 }
