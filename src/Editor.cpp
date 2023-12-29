@@ -10,20 +10,15 @@ Editor::~Editor() noexcept {
 }
 
 auto Editor::e() noexcept -> v0 {
-    ImGui::ShowDemoWindow();
+    ImGui::ShowMetricsWindow();
 }
 
 auto Editor::r() noexcept -> v0 {
     e();
     auto colorAttachment = arln::ColorAttachmentInfo{
         .image = m_ctx.getPresentImage(),
-    }; m_cmd.begin();
-    m_cmd.transitionImages(arln::ImageTransitionInfo{
-        .image = m_ctx.getPresentImage(),
-        .oldLayout = arln::ImageLayout::eUndefined, .newLayout = arln::ImageLayout::eColorAttachment,
-        .srcStageMask = arln::PipelineStageBits::eTopOfPipe, .dstStageMask = arln::PipelineStageBits::eColorAttachmentOutput,
-        .srcAccessMask = arln::AccessBits::eNone, .dstAccessMask = arln::AccessBits::eColorAttachmentWrite
-    }); m_cmd.beginRendering(arln::RenderingInfo{
+        .late = true
+    }; m_cmd.begin(); m_cmd.beginRendering(arln::RenderingInfo{
         .pColorAttachment = &colorAttachment
     });
     arln::ImguiContext::Render(m_cmd);

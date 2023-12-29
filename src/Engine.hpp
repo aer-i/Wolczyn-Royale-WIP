@@ -11,4 +11,5 @@ private:
     arln::Window m_wn;
     arln::Context m_cx;
     Renderer m_rn;
+    std::vector<Scene> m_ss;
 };

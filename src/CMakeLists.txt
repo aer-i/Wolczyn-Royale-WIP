@@ -6,6 +6,7 @@ target_sources(${PROJECT_NAME} PUBLIC
     Engine.cpp
     Renderer.cpp
     Editor.cpp
+    Scene.cpp
 )
 
 target_link_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/)
