@@ -23,12 +23,15 @@ public:
         arln::u64 dp;
     };
 public:
-    explicit Scene(arln::Context& t_c) noexcept;
+    Scene(arln::Window& t_w, arln::Context& t_c) noexcept;
     ~Scene() noexcept;
     inline auto& gMhs() noexcept {
         return m_mhs;
+    } inline auto& gCm() noexcept {
+        return m_cm;
     }
     auto lm(std::vector<Vertex> const& t_v, std::vector<arln::u32> const& t_i) noexcept -> v0;
+    auto u() noexcept -> v0;
 private:
     arln::Context& m_ctx;
     Camera m_cm;

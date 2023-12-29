@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.27)
-project(LightFrame)
+project(WR)
 
 add_subdirectory(src)
 add_subdirectory(vendor)
@@ -45,4 +45,4 @@ add_custom_target(
     DEPENDS ${SPIRV_BINARY_FILES}
 )
 
-add_dependencies(LightFrame Shaders)
+add_dependencies(WR Shaders)

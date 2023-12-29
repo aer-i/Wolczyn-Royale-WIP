@@ -21,7 +21,7 @@ auto Renderer::drF(Scene& t_rnS) noexcept -> v0 {
         });
         for (auto& m : t_rnS.gMhs()) {
             Scene::PD pd = {
-                .pv = arln::mat4{ 1.f },
+                .pv = t_rnS.gCm().gPV(),
                 .dp = *m.vb.getDeviceAddress()
             }; m_cmd.bindGraphicsPipeline(m.mts);
             m_cmd.setScissor(0, 0, m_wnd.getWidth(), m_wnd.getHeight());
