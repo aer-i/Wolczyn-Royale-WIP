@@ -28,7 +28,7 @@ Engine::Engine() noexcept
             .applicationName = g_t,
             .engineName = g_t,
         }
-    }, m_rn{ m_cx }
+    }, m_rn{ m_wn, m_cx }
 {}
 
 auto Engine::exe() noexcept -> v0 {

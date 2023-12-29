@@ -1,14 +1,18 @@
 #pragma once
 #include <Arln.hpp>
+#include "Editor.hpp"
 
 class Renderer {
     using v0 = void;
 public:
     Renderer() = delete;
-    explicit Renderer(arln::Context& t_c) noexcept;
+    Renderer(arln::Window& t_w, arln::Context& t_c) noexcept;
     ~Renderer() = default;
     auto drF() noexcept -> v0;
 private:
+    arln::Window& m_wnd;
     arln::Context& m_ctx;
-    arln::CommandBuffer m_cmd{};
+    Editor m_ed;
+    arln::CommandBuffer m_cmd;
+    std::vector<arln::CommandBufferHandle> m_cS;
 };
