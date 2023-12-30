@@ -19,7 +19,8 @@ Scene::~Scene() noexcept {
 
 auto Scene::lm(const std::vector<Vertex>& t_v, const std::vector<arln::u32>& t_i) noexcept -> v0 {
     auto pi = arln::GraphicsPipelineInfo{
-        .vertShaderPath = "shaders/bg.vert.spv", .fragShaderPath = "shaders/bg.frag.spv"
+        .vertShaderPath = "shaders/bg.vert.spv", .fragShaderPath = "shaders/bg.frag.spv",
+        .depthFormat = m_ctx.getDefaultDepthFormat(), .depthStencil = true
     }; pi.pushConstants << arln::PushConstantRange(arln::ShaderStageBits::eVertex, sizeof(PD), 0);
     auto vb = m_ctx.allocateBuffer(arln::BufferUsageBits::eStorageBuffer, arln::MemoryType::eGpu, t_v.size() * sizeof(t_v[0]));
     auto ib = m_ctx.allocateBuffer(arln::BufferUsageBits::eIndexBuffer, arln::MemoryType::eGpu, t_i.size() * sizeof(t_i[0]));
@@ -38,7 +39,6 @@ auto Scene::lm(std::string_view t_pth) noexcept -> void {
         index_count += 3 * (ob->face_vertices[i] - 2);
 
     std::vector<Vertex> vertices;
-    std::vector<arln::u32> indices;
     vertices.resize(index_count);
 
     size_t vertex_offset = 0;
@@ -60,9 +60,9 @@ auto Scene::lm(std::string_view t_pth) noexcept -> void {
             v.pos.x = ob->positions[gi.p * 3 + 0];
             v.pos.y = ob->positions[gi.p * 3 + 1];
             v.pos.z = ob->positions[gi.p * 3 + 2];
-            //v.nx = uint8_t(ob->normals[gi.n * 3 + 0] * 127.f + 127.5f);
-            //v.ny = uint8_t(ob->normals[gi.n * 3 + 1] * 127.f + 127.5f);
-            //v.nz = uint8_t(ob->normals[gi.n * 3 + 2] * 127.f + 127.5f);
+            v.normal.x = ob->normals[gi.n * 3 + 0];
+            v.normal.y = ob->normals[gi.n * 3 + 1];
+            v.normal.z = ob->normals[gi.n * 3 + 2];
             v.uvX = meshopt_quantizeHalf(ob->texcoords[gi.t * 2 + 0]);
             v.uvY = meshopt_quantizeHalf(ob->texcoords[gi.t * 2 + 1]);
         }
@@ -73,6 +73,22 @@ auto Scene::lm(std::string_view t_pth) noexcept -> void {
     assert(vertex_offset == index_count);
 
     fast_obj_destroy(ob);
+
+    size_t indexCount = vertices.size();
+
+    std::vector<uint32_t> remap(indexCount);
+    size_t vertex_count = meshopt_generateVertexRemap(remap.data(), 0, indexCount, vertices.data(), indexCount, sizeof(Vertex));
+
+    std::vector<Vertex> revertices(vertex_count);
+    std::vector<uint32_t> indices(indexCount);
+
+    meshopt_remapVertexBuffer(revertices.data(), vertices.data(), indexCount, sizeof(Vertex), remap.data());
+    meshopt_remapIndexBuffer(indices.data(), nullptr, indexCount, remap.data());
+
+    meshopt_optimizeVertexCache(indices.data(), indices.data(), indexCount, vertex_count);
+    meshopt_optimizeVertexFetch(revertices.data(), indices.data(), indexCount, revertices.data(), vertex_count, sizeof(Vertex));
+
+    lm(revertices, indices);
 }
 
 auto Scene::u() noexcept -> void {

@@ -3,6 +3,13 @@
 Renderer::Renderer(arln::Window& t_w, arln::Context& t_c) noexcept : m_wnd{ t_w }, m_ctx{ t_c },
     m_ed{ t_w, t_c } {
     m_cmd = m_ctx.allocateCommandBuffer();
+    m_dAtt.recreate(
+        m_wnd.getWidth(),
+        m_wnd.getHeight(),
+        m_ctx.getDefaultDepthFormat(),
+        arln::ImageUsageBits::eDepthStencilAttachment,
+        arln::MemoryType::eGpuOnly
+    );
 }
 
 auto Renderer::drF(Scene& t_rnS) noexcept -> v0 {
@@ -10,14 +17,24 @@ auto Renderer::drF(Scene& t_rnS) noexcept -> v0 {
         auto cAtt = arln::ColorAttachmentInfo {
             .clearColor = { .75f, .25f, .5f, 1.f },
             .image = m_ctx.getPresentImage()
-        }; m_cmd.begin(); m_cmd.transitionImages(arln::ImageTransitionInfo{
-            .image = m_ctx.getPresentImage(),
-            .oldLayout = arln::ImageLayout::eUndefined, .newLayout = arln::ImageLayout::eColorAttachment,
-            .srcStageMask = arln::PipelineStageBits::eTopOfPipe, .dstStageMask = arln::PipelineStageBits::eColorAttachmentOutput,
-            .srcAccessMask = arln::AccessBits::eNone, .dstAccessMask = arln::AccessBits::eColorAttachmentWrite
+        }; auto dAtt = arln::DepthAttachmentInfo{
+            .image = m_dAtt
+        }; m_cmd.begin(); m_cmd.transitionImages({
+            arln::ImageTransitionInfo{
+                .image = m_ctx.getPresentImage(),
+                .oldLayout = arln::ImageLayout::eUndefined, .newLayout = arln::ImageLayout::eColorAttachment,
+                .srcStageMask = arln::PipelineStageBits::eTopOfPipe, .dstStageMask = arln::PipelineStageBits::eColorAttachmentOutput,
+                .srcAccessMask = arln::AccessBits::eNone, .dstAccessMask = arln::AccessBits::eColorAttachmentWrite
+            }, arln::ImageTransitionInfo{
+                .image = m_dAtt,
+                .oldLayout = arln::ImageLayout::eUndefined, .newLayout = arln::ImageLayout::eDepthAttachment,
+                .srcStageMask = arln::PipelineStageBits::eLateFragmentTests | arln::PipelineStageBits::eEarlyFragmentTests,
+                .dstStageMask = arln::PipelineStageBits::eLateFragmentTests | arln::PipelineStageBits::eEarlyFragmentTests,
+                .srcAccessMask = arln::AccessBits::eNone, .dstAccessMask = arln::AccessBits::eDepthStencilAttachmentWrite
+            }
         });
         m_cmd.beginRendering(arln::RenderingInfo{
-            .pColorAttachment = &cAtt
+            .pColorAttachment = &cAtt, .pDepthAttachment = &dAtt
         });
         for (auto& m : t_rnS.gMhs()) {
             Scene::PD pd = {
@@ -33,4 +50,8 @@ auto Renderer::drF(Scene& t_rnS) noexcept -> v0 {
         m_cmd.end();
     } m_ed.r();
     m_ctx.endFrame({ m_cmd, m_ed.gc() });
+}
+
+Renderer::~Renderer() noexcept {
+    m_dAtt.free();
 }

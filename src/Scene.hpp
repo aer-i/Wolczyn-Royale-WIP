@@ -5,7 +5,7 @@ struct Vertex
 {
     arln::vec3 pos;
     arln::f32  uvX;
-    arln::vec3 col;
+    arln::vec3 normal;
     arln::f32  uvY;
 };
 

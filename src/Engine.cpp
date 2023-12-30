@@ -26,15 +26,14 @@ Engine::Engine() noexcept
             .layers = { "VK_LAYER_KHRONOS_validation" },
             #endif
             .applicationName = g_t, .engineName = g_t,
-            .presentMode = arln::PresentMode::eTripleBuffering
+            .presentMode = arln::PresentMode::eNoSync
         }
     }, m_rn{ m_wn, m_cx }
 { m_ss.emplace_back(m_wn, m_cx);}
 
 auto Engine::exe() noexcept -> v0 {
     m_ss.back().lm(
-        { Vertex{.pos = {0, 0.5, 0}}, Vertex{.pos = {0.5, -0.5, 0}},
-          Vertex{.pos = {-0.5, -0.5, 0}}}, { 0, 1, 2 }
+        "../../assets/kitten.obj"
     );
     while (not m_wn.shouldClose()) {
         m_wn.pollEvents();

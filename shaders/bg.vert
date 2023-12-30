@@ -5,7 +5,7 @@ struct Vertex
 {
     vec3 pos;
     float uvX;
-    vec3 col;
+    vec3 normal;
     float uvY;
 };
 
@@ -19,9 +19,11 @@ layout(push_constant) uniform PushConstant
     VertexBuffer vertexBuffer;
 } pc;
 
+layout(location = 0) out vec3 fragNormal;
+
 void main()
 {
     Vertex v = pc.vertexBuffer.vertices[gl_VertexIndex];
-
+    fragNormal = v.normal;
     gl_Position = pc.projectionView * vec4(v.pos, 1);
 }
