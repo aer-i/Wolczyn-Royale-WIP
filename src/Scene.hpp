@@ -12,6 +12,7 @@ struct Vertex
 struct Mesh {
     arln::Pipeline mts;
     arln::Buffer vb, ib;
+    arln::u32 ic;
 };
 
 class Scene
@@ -31,6 +32,7 @@ public:
         return m_cm;
     }
     auto lm(std::vector<Vertex> const& t_v, std::vector<arln::u32> const& t_i) noexcept -> v0;
+    auto lm(std::string_view t_pth) noexcept -> v0;
     auto u() noexcept -> v0;
 private:
     arln::Context& m_ctx;

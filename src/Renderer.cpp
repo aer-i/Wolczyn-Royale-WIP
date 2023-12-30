@@ -8,7 +8,7 @@ Renderer::Renderer(arln::Window& t_w, arln::Context& t_c) noexcept : m_wnd{ t_w 
 auto Renderer::drF(Scene& t_rnS) noexcept -> v0 {
     m_ctx.beginFrame(); {
         auto cAtt = arln::ColorAttachmentInfo {
-            .clearColor = { .75f, .25f, .5f, 1.f},
+            .clearColor = { .75f, .25f, .5f, 1.f },
             .image = m_ctx.getPresentImage()
         }; m_cmd.begin(); m_cmd.transitionImages(arln::ImageTransitionInfo{
             .image = m_ctx.getPresentImage(),
@@ -27,7 +27,8 @@ auto Renderer::drF(Scene& t_rnS) noexcept -> v0 {
             m_cmd.setScissor(0, 0, m_wnd.getWidth(), m_wnd.getHeight());
             m_cmd.setViewport(0, (arln::f32)m_wnd.getHeight(), (arln::f32)m_wnd.getWidth(), -(arln::f32)m_wnd.getHeight());
             m_cmd.pushConstant(m.mts, arln::ShaderStageBits::eVertex, sizeof(Scene::PD), &pd);
-            m_cmd.draw(3);
+            m_cmd.bindIndexBuffer32(m.ib);
+            m_cmd.drawIndexed(m.ic);
         } m_cmd.endRendering();
         m_cmd.end();
     } m_ed.r();
