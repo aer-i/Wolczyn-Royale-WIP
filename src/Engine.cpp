@@ -25,6 +25,7 @@ Engine::Engine() noexcept
             .layers = { "VK_LAYER_KHRONOS_validation" },
             #endif
             .applicationName = g_t, .engineName = g_t,
+            .presentMode = arln::PresentMode::eNoSync
         }
     }, m_rn{ m_wn, m_cx }
 { m_ss.emplace_back(m_wn, m_cx);}

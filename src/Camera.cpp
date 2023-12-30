@@ -2,23 +2,32 @@
 #include <cmath>
 
 auto Camera::u() noexcept -> v0 {
-    arln::f32 dt = .006f;
+    arln::f32 dt = .001f;
+    constexpr arln::f32 sn = 0.1f;
+    constexpr arln::f32 sp = 5.f;
 
-    if (ImGui::IsKeyDown(ImGuiKey_W)) {
-        m_ps += m_fr * dt * 5.f;
-    } if (ImGui::IsKeyDown(ImGuiKey_S)) {
-        m_ps -= m_fr * dt * 5.f;
-    } if (ImGui::IsKeyDown(ImGuiKey_D)) {
-        m_ps += m_rt * dt * 5.f;
-    } if (ImGui::IsKeyDown(ImGuiKey_A)) {
-        m_ps -= m_rt * dt * 5.f;
-    } if (ImGui::IsKeyDown(ImGuiKey_E)) {
-        m_ps.y += dt * 5.f;
-    } if (ImGui::IsKeyDown(ImGuiKey_Q)) {
-        m_ps.y -= dt * 5.f;
+    static bool rmm = false;
+    if (m_wn.getKeyDown(arln::Key::eEscape)) {
+        rmm = !rmm;
+        m_wn.setRelativeMouseMode(rmm);
+    } if (m_wn.getKey(arln::Key::eW)) {
+        m_ps -= m_fr * dt * sp;
+    } if (m_wn.getKey(arln::Key::eS)) {
+        m_ps += m_fr * dt * sp;
+    } if (m_wn.getKey(arln::Key::eD)) {
+        m_ps += m_rt * dt * sp;
+    } if (m_wn.getKey(arln::Key::eA)) {
+        m_ps -= m_rt * dt * sp;
+    } if (m_wn.getKey(arln::Key::eE)) {
+        m_ps.y += dt * sp;
+    } if (m_wn.getKey(arln::Key::eQ)) {
+        m_ps.y -= dt * sp;
     }
 
-    m_ya = glm::mod(m_ya + 0.01f, 360.f);
+    if (rmm) {
+        m_ya = glm::mod(m_ya - m_wn.getCursorOffsetX() * sn, 360.f);
+        m_pi += m_wn.getCursorOffsetY() * sn;
+    }
 
     if (m_pi > 89.9f) m_pi = 89.9f;
     if (m_pi < -89.9f) m_pi = -89.9f;
@@ -38,10 +47,10 @@ auto Camera::sP(arln::f32 t_f, arln::f32 t_ar, arln::f32 t_ne, arln::f32 t_fa) n
     arln::f32 const thf = std::tan(t_f / 2.f);
     m_pr = glm::mat4{ 0.0f };
     m_pr[0][0] = 1.f / (t_ar * thf);
-    m_pr[1][1] = -(1.f / (thf));
-    m_pr[2][2] = -(t_fa + t_ne) / (t_fa - t_ne);
-    m_pr[2][3] = -1.f;
-    m_pr[3][2] = -(2 * t_fa * t_ne) / (t_fa - t_ne);
+    m_pr[1][1] = 1.f / (thf);
+    m_pr[2][2] = t_fa / (t_fa - t_ne);
+    m_pr[2][3] = 1.f;
+    m_pr[3][2] = -(t_fa * t_ne) / (t_fa - t_ne);
 }
 
 auto Camera::sV(const arln::vec3& t_di) noexcept -> v0 {
