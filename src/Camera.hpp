@@ -5,7 +5,8 @@ class Camera
 {
     using v0 = void;
 public:
-    explicit Camera(arln::Window& t_wnd) noexcept : m_wn{ t_wnd } {}
+    explicit Camera(arln::Window& t_wnd, arln::vec3 const& t_sps = {}, arln::f32 t_y = {}, arln::f32 t_p = {}) noexcept
+    : m_wn{ t_wnd }, m_ps{ t_sps }, m_ya{ t_y }, m_pi{ t_p } {}
     auto u() noexcept -> v0;
     auto sP(arln::f32 t_f, arln::f32 t_ar, arln::f32 t_ne = 0.1f, arln::f32 t_fa = 256.f) noexcept -> v0;
     auto sV(arln::vec3 const& t_di) noexcept -> v0;
@@ -18,6 +19,6 @@ private:
     arln::Window& m_wn;
     arln::mat4 m_pr{}, m_vi{};
     arln::vec3 m_fr{}, m_up{},
-       m_ps{}, m_rt{}, m_ri{};
-    arln::f32 m_ya{}, m_pi{};
+               m_ps{}, m_rt{};
+    arln::f32  m_ya{}, m_pi{};
 };

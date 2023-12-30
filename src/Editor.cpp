@@ -1,4 +1,5 @@
 #include "Editor.hpp"
+#include "Time.hpp"
 
 Editor::Editor(arln::Window& t_w, arln::Context& t_c) noexcept : m_wnd{ t_w }, m_ctx{ t_c } {
     arln::ImguiContext::Init(t_w);
@@ -11,10 +12,9 @@ Editor::~Editor() noexcept {
 
 auto Editor::e() noexcept -> v0 {
     auto const* v = ImGui::GetMainViewport();
-    ImVec2 wp, wpp;
+    ImVec2 wp;
     wp.x = v->WorkPos.x + 10; wp.y = v->WorkPos.y + 10;
-    wpp.x = {0}; wpp.y = {0};
-    ImGui::SetNextWindowPos(wp, ImGuiCond_Always, wpp);
+    ImGui::SetNextWindowPos(wp, ImGuiCond_Always);
     ImGui::SetNextWindowViewport(v->ID);
     ImGui::SetNextWindowBgAlpha(0.35f);
     if (ImGui::Begin("f", nullptr,
@@ -27,7 +27,7 @@ auto Editor::e() noexcept -> v0 {
         ImGuiWindowFlags_NoMove
     ))
     {
-        ImGui::Text("Fps overlay\nfps: %u", m_wnd.getFps());
+        ImGui::Text("Fps overlay\nfps: %u", Time::gFr());
     }
     ImGui::End();
 }

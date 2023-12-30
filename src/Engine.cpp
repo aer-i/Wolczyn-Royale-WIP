@@ -1,4 +1,5 @@
 #include "Engine.hpp"
+#include "Time.hpp"
 #include <iostream>
 
 static constinit unsigned g_cs = 0;
@@ -31,13 +32,13 @@ Engine::Engine() noexcept
 { m_ss.emplace_back(m_wn, m_cx);}
 
 auto Engine::exe() noexcept -> v0 {
-
     m_ss.back().lm(
         { Vertex{.pos = {0, 0.5, 0}}, Vertex{.pos = {0.5, -0.5, 0}},
           Vertex{.pos = {-0.5, -0.5, 0}}}, { 0, 1, 2 }
     );
     while (not m_wn.shouldClose()) {
         m_wn.pollEvents();
+        Time::u();
         m_ss[g_cs].u();
         if (m_cx.canRender()) {
             m_rn.drF(m_ss[g_cs]); }

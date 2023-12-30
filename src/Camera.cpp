@@ -1,10 +1,25 @@
 #include "Camera.hpp"
+#include "Time.hpp"
 #include <cmath>
 
 auto Camera::u() noexcept -> v0 {
-    arln::f32 dt = .001f;
-    constexpr arln::f32 sn = 0.1f;
+    arln::f32 dt = Time::gDt();
+    static arln::f32 sn = 0.1f;
     constexpr arln::f32 sp = 5.f;
+    auto wkp = ImGui::GetMainViewport()->WorkPos;
+    ImGui::SetNextWindowPos({ wkp.x + 10, wkp.y + 60 }, ImGuiCond_Always);
+    if (ImGui::Begin("Mouse settings", nullptr,
+             ImGuiWindowFlags_NoDecoration |
+             ImGuiWindowFlags_AlwaysAutoResize |
+             ImGuiWindowFlags_NoBackground |
+             ImGuiWindowFlags_NoMove |
+             ImGuiWindowFlags_NoNav |
+             ImGuiWindowFlags_NoFocusOnAppearing |
+             ImGuiWindowFlags_NoSavedSettings |
+             ImGuiWindowFlags_NoDocking
+         )) {
+        ImGui::SliderFloat("Mouse sens", &sn, 0.01f, 10.f, "%.2f");
+    } ImGui::End();
 
     static bool rmm = false;
     if (m_wn.getKeyDown(arln::Key::eEscape)) {
