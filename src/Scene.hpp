@@ -13,6 +13,7 @@ struct Mesh {
     arln::Buffer vb, ib;
     arln::Descriptor ds;
     arln::u32 ic;
+    arln::mat4 matrix;
 };
 
 class Scene
@@ -32,6 +33,7 @@ public:
 private:
     arln::Context& m_ctx;
     arln::DescriptorPool m_dp;
+    arln::Buffer m_ob;
     Camera m_cm;
     std::vector<Mesh> m_mhs;
 };

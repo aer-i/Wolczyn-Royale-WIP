@@ -4,13 +4,15 @@
 #include <fast_obj.h>
 #include <meshoptimizer.h>
 
-Scene::Scene(arln::Window& t_w, arln::Context& t_c) noexcept : m_ctx{ t_c }, m_cm{ t_w, { 0.f, 0.f, 3.f}, 90.f } {
+Scene::Scene(arln::Window& t_w, arln::Context& t_c) noexcept : m_ctx{ t_c }, m_cm{ t_w, { 0.f, 0.f, 3.f }, 90.f } {
     m_cm.sP(arln::toRadians(70), arln::f32(t_w.getWidth()) / arln::f32(t_w.getHeight()));
     m_cm.u();
     m_dp = m_ctx.createDescriptorPool();
+    m_ob.recreate(arln::BufferUsageBits::eStorageBuffer, arln::MemoryType::eGpu, sizeof(arln::mat4) * 1000);
 }
 
 Scene::~Scene() noexcept {
+    m_ob.free();
     m_dp.destroy();
     std::for_each(m_mhs.begin(), m_mhs.end(), [](Mesh& m) {
         m.mts.destroy();
@@ -21,6 +23,7 @@ Scene::~Scene() noexcept {
 
 auto Scene::lm(const std::vector<Vertex>& t_v, const std::vector<arln::u32>& t_i) noexcept -> v0 {
     auto ds = m_dp.addBinding(0, arln::DescriptorType::eStorageBuffer, arln::ShaderStageBits::eVertex)
+        .addBinding(1, arln::DescriptorType::eStorageBuffer, arln::ShaderStageBits::eVertex)
         .createDescriptor();
     auto pi = arln::GraphicsPipelineInfo{
         .vertShaderPath = "shaders/bg.vert.spv", .fragShaderPath = "shaders/bg.frag.spv",
@@ -33,8 +36,11 @@ auto Scene::lm(const std::vector<Vertex>& t_v, const std::vector<arln::u32>& t_i
     vb.writeData(t_v.data(), vb.getSize());
     ib.writeData(t_i.data(), ib.getSize());
     arln::DescriptorWriter()
-        .addBuffer(ds, vb, 0, arln::DescriptorType::eStorageBuffer).write();
-    m_mhs.emplace_back(m_ctx.createGraphicsPipeline(pi), vb, ib, ds, static_cast<arln::u32>(t_i.size()));
+        .addBuffer(ds, vb, 0, arln::DescriptorType::eStorageBuffer)
+        .addBuffer(ds, m_ob, 1, arln::DescriptorType::eStorageBuffer).write();
+    static arln::f32 xa = 0;
+    m_mhs.emplace_back(m_ctx.createGraphicsPipeline(pi), vb, ib, ds, static_cast<arln::u32>(t_i.size()),
+       glm::translate(arln::mat4{1.f}, {xa++, 0, 0}));
 }
 
 auto Scene::lm(std::string_view t_pth) noexcept -> void {
@@ -102,6 +108,9 @@ auto Scene::lm(std::string_view t_pth) noexcept -> void {
     lm(revertices, indices);
 }
 
-auto Scene::u() noexcept -> void {
+auto Scene::u() noexcept -> v0 {
     m_cm.u();
+    for (size_t i = 0; i < m_mhs.size(); ++i) {
+        m_ob.writeData(&m_mhs[i].matrix, sizeof(arln::mat4), i * sizeof(arln::mat4));
+    }
 }

@@ -9,7 +9,14 @@ Renderer::Renderer(arln::Window& t_w, arln::Context& t_c) noexcept : m_wnd{ t_w 
         m_ctx.getDefaultDepthFormat(),
         arln::ImageUsageBits::eDepthStencilAttachment,
         arln::MemoryType::eGpuOnly
-    );
+    ); m_ctx.setResizeCallback([&](arln::u32 t_w, arln::u32 t_h){
+        m_dAtt.recreate(
+            t_w,
+            t_h,
+            m_ctx.getDefaultDepthFormat(),
+            arln::ImageUsageBits::eDepthStencilAttachment,
+            arln::MemoryType::eGpuOnly
+    );});
 }
 
 auto Renderer::drF(Scene& t_rnS) noexcept -> v0 {
@@ -36,7 +43,7 @@ auto Renderer::drF(Scene& t_rnS) noexcept -> v0 {
         m_cmd.beginRendering(arln::RenderingInfo{
             .pColorAttachment = &cAtt, .pDepthAttachment = &dAtt
         });
-        for (auto& m : t_rnS.gMhs()) {
+        for (arln::u32 i = 0; auto& m : t_rnS.gMhs()) {
             auto pc = t_rnS.gCm().gPV();
             m_cmd.bindGraphicsPipeline(m.mts);
             m_cmd.setScissor(0, 0, m_wnd.getWidth(), m_wnd.getHeight());
@@ -44,7 +51,7 @@ auto Renderer::drF(Scene& t_rnS) noexcept -> v0 {
             m_cmd.pushConstant(m.mts, arln::ShaderStageBits::eVertex, sizeof(pc), &pc);
             m_cmd.bindDescriptorGraphics(m.mts, m.ds);
             m_cmd.bindIndexBuffer32(m.ib);
-            m_cmd.drawIndexed(m.ic);
+            m_cmd.drawIndexed(m.ic, 1, 0, 0, i); ++i;
         } m_cmd.endRendering();
         m_cmd.end();
     } m_ed.r();
