@@ -2,24 +2,23 @@
 #include <cmath>
 
 auto Camera::u() noexcept -> v0 {
-    arln::f32 dt = .016f;
+    arln::f32 dt = .006f;
 
     if (ImGui::IsKeyDown(ImGuiKey_W)) {
         m_ps += m_fr * dt * 5.f;
     } if (ImGui::IsKeyDown(ImGuiKey_S)) {
         m_ps -= m_fr * dt * 5.f;
     } if (ImGui::IsKeyDown(ImGuiKey_D)) {
-        m_ps += m_fr * dt * 5.f;
+        m_ps += m_rt * dt * 5.f;
     } if (ImGui::IsKeyDown(ImGuiKey_A)) {
-        m_ps -= m_fr * dt * 5.f;
+        m_ps -= m_rt * dt * 5.f;
     } if (ImGui::IsKeyDown(ImGuiKey_E)) {
         m_ps.y += dt * 5.f;
     } if (ImGui::IsKeyDown(ImGuiKey_Q)) {
         m_ps.y -= dt * 5.f;
     }
 
-    //m_ya = glm::mod(m_ya + Input::GetMouseOffsetX() * 0.1f, 360.f);
-    //m_pi += -Input::GetMouseOffsetY() * 0.1f;
+    m_ya = glm::mod(m_ya + 0.01f, 360.f);
 
     if (m_pi > 89.9f) m_pi = 89.9f;
     if (m_pi < -89.9f) m_pi = -89.9f;
