@@ -32,9 +32,7 @@ Engine::Engine() noexcept
 { m_ss.emplace_back(m_wn, m_cx);}
 
 auto Engine::exe() noexcept -> v0 {
-    m_ss.back().lm(
-        "../../assets/kitten.obj"
-    );
+    m_ss.back().lm("../../assets/kitten.obj");
     while (not m_wn.shouldClose()) {
         m_wn.pollEvents();
         Time::u();

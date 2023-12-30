@@ -1,29 +1,32 @@
 #version 460
 #extension GL_EXT_buffer_reference : require
+#extension GL_EXT_shader_16bit_storage : require
+#extension GL_EXT_shader_8bit_storage : require
 
 struct Vertex
 {
-    vec3 pos;
-    float uvX;
-    vec3 normal;
-    float uvY;
-};
-
-layout(buffer_reference, std430) readonly buffer VertexBuffer{
-    Vertex vertices[];
+    float vx, vy, vz;
+    uint8_t nx, ny, nz, nw;
+    float16_t tu, tv;
 };
 
 layout(push_constant) uniform PushConstant
 {
     mat4 projectionView;
-    VertexBuffer vertexBuffer;
 } pc;
+
+layout(binding = 0) readonly buffer VertexBuffer
+{
+    Vertex vertices[];
+};
 
 layout(location = 0) out vec3 fragNormal;
 
 void main()
 {
-    Vertex v = pc.vertexBuffer.vertices[gl_VertexIndex];
-    fragNormal = v.normal;
-    gl_Position = pc.projectionView * vec4(v.pos, 1);
+    vec3 position = vec3(vertices[gl_VertexIndex].vx, vertices[gl_VertexIndex].vy, vertices[gl_VertexIndex].vz);
+    vec3 normal = vec3(int(vertices[gl_VertexIndex].nx), int(vertices[gl_VertexIndex].ny), int(vertices[gl_VertexIndex].nz)) / 127.0 - 1.0;
+    vec2 texcoord = vec2(vertices[gl_VertexIndex].tu, vertices[gl_VertexIndex].tv);
+    fragNormal = normal;
+    gl_Position = pc.projectionView * vec4(position, 1);
 }

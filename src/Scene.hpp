@@ -3,26 +3,21 @@
 
 struct Vertex
 {
-    arln::vec3 pos;
-    arln::f32  uvX;
-    arln::vec3 normal;
-    arln::f32  uvY;
+    arln::f32 vx, vy, vz;
+    arln::u8  nx, ny, nz, nw;
+    arln::u16 tu, tv;
 };
 
 struct Mesh {
     arln::Pipeline mts;
     arln::Buffer vb, ib;
+    arln::Descriptor ds;
     arln::u32 ic;
 };
 
 class Scene
 {
     using v0 = void;
-public:
-    struct PD {
-        arln::mat4 pv;
-        arln::u64 dp;
-    };
 public:
     Scene(arln::Window& t_w, arln::Context& t_c) noexcept;
     ~Scene() noexcept;
@@ -36,6 +31,7 @@ public:
     auto u() noexcept -> v0;
 private:
     arln::Context& m_ctx;
+    arln::DescriptorPool m_dp;
     Camera m_cm;
     std::vector<Mesh> m_mhs;
 };
