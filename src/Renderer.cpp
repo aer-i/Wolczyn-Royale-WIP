@@ -4,8 +4,8 @@ Renderer::Renderer(arln::Window& t_w, arln::Context& t_c) noexcept : m_wnd{ t_w 
     m_ed{ t_w, t_c } {
     m_cmd = m_ctx.allocateCommandBuffer();
     m_dAtt.recreate(
-        m_wnd.getWidth(),
-        m_wnd.getHeight(),
+        m_ctx.getCurrentExtent().x,
+        m_ctx.getCurrentExtent().y,
         m_ctx.getDefaultDepthFormat(),
         arln::ImageUsageBits::eDepthStencilAttachment,
         arln::MemoryType::eGpuOnly

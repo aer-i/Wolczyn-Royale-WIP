@@ -7,7 +7,7 @@ static constinit unsigned g_cs = 0;
 static void infC(std::string_view t_i) { std::cout << t_i << std::endl; }
 static void errC(std::string_view t_e) { std::cerr << t_e << std::endl; }
 
-static constexpr const char* g_t = "Light Frame";
+static constexpr const char* g_t = "Wolczyn Royale";
 static constexpr unsigned g_sw = 1280, g_sh = 720;
 
 Engine::Engine() noexcept

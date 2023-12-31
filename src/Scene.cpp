@@ -5,7 +5,7 @@
 #include <meshoptimizer.h>
 
 Scene::Scene(arln::Window& t_w, arln::Context& t_c) noexcept : m_ctx{ t_c }, m_cm{ t_w, { 0.f, 0.f, 3.f }, 90.f } {
-    m_cm.sP(arln::toRadians(70), arln::f32(t_w.getWidth()) / arln::f32(t_w.getHeight()));
+    m_cm.sP(arln::toRadians(70), arln::f32(t_c.getCurrentExtent().x) / arln::f32(t_c.getCurrentExtent().y));
     m_cm.u();
     m_dp = m_ctx.createDescriptorPool();
     m_ob.recreate(arln::BufferUsageBits::eStorageBuffer, arln::MemoryType::eGpu, sizeof(arln::mat4) * 1000);
@@ -87,8 +87,6 @@ auto Scene::lm(std::string_view t_pth) noexcept -> void {
         index_offset += ob->face_vertices[i];
     }
 
-    assert(vertex_offset == index_count);
-
     fast_obj_destroy(ob);
 
     size_t indexCount = vertices.size();
@@ -109,6 +107,7 @@ auto Scene::lm(std::string_view t_pth) noexcept -> void {
 }
 
 auto Scene::u() noexcept -> v0 {
+    m_cm.sP(arln::toRadians(70), arln::f32(m_ctx.getCurrentExtent().x) / arln::f32(m_ctx.getCurrentExtent().y));
     m_cm.u();
     for (size_t i = 0; i < m_mhs.size(); ++i) {
         m_ob.writeData(&m_mhs[i].matrix, sizeof(arln::mat4), i * sizeof(arln::mat4));
