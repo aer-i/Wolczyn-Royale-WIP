@@ -1,20 +1,7 @@
 #pragma once
 #include "Camera.hpp"
-
-struct Vertex
-{
-    arln::f32 vx, vy, vz;
-    arln::u8  nx, ny, nz, nw;
-    arln::u16 tu, tv;
-};
-
-struct Mesh {
-    arln::Pipeline mts;
-    arln::Buffer vb, ib;
-    arln::Descriptor ds;
-    arln::u32 ic;
-    arln::mat4 matrix;
-};
+#include "Model.hpp"
+#include <unordered_map>
 
 class Scene
 {
@@ -22,18 +9,21 @@ class Scene
 public:
     Scene(arln::Window& t_w, arln::Context& t_c) noexcept;
     ~Scene() noexcept;
-    inline auto& gMhs() noexcept {
-        return m_mhs;
+    inline auto& gMls() noexcept {
+        return m_mls;
     } inline auto& gCm() noexcept {
         return m_cm;
     }
-    auto lm(std::vector<Vertex> const& t_v, std::vector<arln::u32> const& t_i) noexcept -> v0;
-    auto lm(std::string_view t_pth) noexcept -> v0;
     auto u() noexcept -> v0;
+    auto lMdl(std::string_view t_msh, std::string_view t_mtr) noexcept -> v0;
+    auto lMhs(std::string_view t_n, std::string_view t_fp) noexcept -> v0;
+    auto lMtr(std::string_view t_n, arln::GraphicsPipelineInfo&& t_pi) noexcept -> v0;
 private:
     arln::Context& m_ctx;
     arln::DescriptorPool m_dp;
     arln::Buffer m_ob;
     Camera m_cm;
-    std::vector<Mesh> m_mhs;
+    std::vector<Model> m_mls;
+    std::unordered_map<std::string, Mesh> m_mhs;
+    std::unordered_map<std::string, Material> m_mts;
 };
