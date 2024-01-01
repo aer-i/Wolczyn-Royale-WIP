@@ -30,7 +30,7 @@ auto Renderer::drF(Scene& t_rnS) noexcept -> v0 {
             arln::ImageTransitionInfo{
                 .image = m_ctx.getPresentImage(),
                 .oldLayout = arln::ImageLayout::eUndefined, .newLayout = arln::ImageLayout::eColorAttachment,
-                .srcStageMask = arln::PipelineStageBits::eTopOfPipe, .dstStageMask = arln::PipelineStageBits::eColorAttachmentOutput,
+                .srcStageMask = arln::PipelineStageBits::eColorAttachmentOutput, .dstStageMask = arln::PipelineStageBits::eColorAttachmentOutput,
                 .srcAccessMask = arln::AccessBits::eNone, .dstAccessMask = arln::AccessBits::eColorAttachmentWrite
             }, arln::ImageTransitionInfo{
                 .image = m_dAtt,

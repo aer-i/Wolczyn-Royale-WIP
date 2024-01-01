@@ -45,7 +45,7 @@ auto Editor::r() noexcept -> v0 {
     m_cmd.transitionImages(arln::ImageTransitionInfo{
         .image = m_ctx.getPresentImage(),
         .oldLayout = arln::ImageLayout::eColorAttachment, .newLayout = arln::ImageLayout::ePresentSrc,
-        .srcStageMask = arln::PipelineStageBits::eColorAttachmentOutput, .dstStageMask = arln::PipelineStageBits::eBottomOfPipe,
+        .srcStageMask = arln::PipelineStageBits::eColorAttachmentOutput, .dstStageMask = arln::PipelineStageBits::eColorAttachmentOutput,
         .srcAccessMask = arln::AccessBits::eColorAttachmentWrite, .dstAccessMask = arln::AccessBits::eNone
     });
     m_cmd.end();
