@@ -12,11 +12,15 @@ Scene::Scene(arln::Window& t_w, arln::Context& t_c) noexcept : m_ctx{ t_c }, m_c
         .cullMode = arln::CullMode::eBack, .depthStencil = true
     }; pi.pushConstants << arln::PushConstantRange(arln::ShaderStageBits::eVertex, sizeof(arln::mat4), 0);
 
-    this->lMhs("kitten", "../../assets/kitten.obj");
+    //this->lMhs("kitten", "../../assets/kitten.obj");
+    this->lMhs("zuzanna", "../../assets/zuzanna.obj");
     this->lMtr("default", std::move(pi));
 
-    this->lMdl("kitten", "default");
-    this->lMdl("kitten", "default");
+    this->lMdl("zuzanna", "default");
+    this->lMdl("zuzanna", "default");
+    this->lMdl("zuzanna", "default");
+    //this->lMdl("kitten", "default");
+    //this->lMdl("kitten", "default");
 }
 
 Scene::~Scene() noexcept {
@@ -47,7 +51,7 @@ auto Scene::lMdl(std::string_view t_msh, std::string_view t_mtr) noexcept -> v0 
         .addBuffer(mtr.d, m_ob, 1, arln::DescriptorType::eStorageBuffer).write();
 
     static arln::f32 cp{ };
-    m_mls.emplace_back(msh, mtr, glm::translate(arln::mat4{1.f}, {cp++, 0, 0}));
+    m_mls.emplace_back(msh, mtr, glm::translate(arln::mat4{1.f}, {cp++ * 3, 0, 0}));
 }
 
 auto Scene::lMhs(std::string_view t_n, std::string_view t_fp) noexcept -> v0 {

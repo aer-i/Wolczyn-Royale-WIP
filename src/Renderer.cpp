@@ -44,8 +44,8 @@ auto Renderer::drF(Scene& t_rnS) noexcept -> v0 {
             .pColorAttachment = &cAtt, .pDepthAttachment = &dAtt
         });
         arln::Pipeline pp{};
+        auto pc = t_rnS.gCm().gPV();
         for (arln::u32 i = 0; auto& m : t_rnS.gMls()) {
-            auto pc = t_rnS.gCm().gPV();
             m_cmd.bindGraphicsPipeline(m.mtr.get().p);
             m_cmd.setScissor(0, 0, m_wnd.getWidth(), m_wnd.getHeight());
             m_cmd.setViewport(0, (arln::f32)m_wnd.getHeight(), (arln::f32)m_wnd.getWidth(), -(arln::f32)m_wnd.getHeight());

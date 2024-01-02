@@ -1,5 +1,4 @@
 #version 460
-#extension GL_EXT_buffer_reference : require
 #extension GL_EXT_shader_16bit_storage : require
 #extension GL_EXT_shader_8bit_storage : require
 
@@ -43,12 +42,14 @@ layout(std140, set = 0, binding = 1) readonly buffer ObjectBuffer
 } ob;
 
 layout(location = 0) out vec3 fragNormal;
+layout(location = 1) out vec3 fragPos;
 
 void main()
 {
     vec3 position = vec3(vertices[gl_VertexIndex].vx, vertices[gl_VertexIndex].vy, vertices[gl_VertexIndex].vz);
     vec3 normal = vec3(int(vertices[gl_VertexIndex].nx), int(vertices[gl_VertexIndex].ny), int(vertices[gl_VertexIndex].nz)) / 127.0 - 1.0;
     vec2 texcoord = vec2(vertices[gl_VertexIndex].tu, vertices[gl_VertexIndex].tv);
-    fragNormal = normal;
+    fragNormal = mat3(transpose(inverse(ob.objects[gl_BaseInstance].model))) * normal;
+    fragPos = vec3(ob.objects[gl_BaseInstance].model * vec4(position, 1));
     gl_Position = pc.projectionView * ob.objects[gl_BaseInstance].model * vec4(position, 1);
 }
