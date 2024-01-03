@@ -4,7 +4,8 @@
 #include <fast_obj.h>
 #include <meshoptimizer.h>
 
-Mesh::Mesh(std::string_view t_fp) noexcept
+Mesh::Mesh(std::string_view t_fp, arln::Descriptor const& t_d) noexcept
+    : d{ t_d }
 {
     fastObjMesh* ob = fast_obj_read(t_fp.data());
     while (!ob) {

@@ -9,16 +9,16 @@ struct Vertex
 };
 
 struct Mesh {
-    explicit Mesh(std::string_view t_fp) noexcept;
+    explicit Mesh(std::string_view t_fp, arln::Descriptor const& t_d) noexcept;
     Mesh() = default;
     arln::Buffer vb, ib;
+    arln::Descriptor d;
     arln::u32 ic{};
 };
 
 struct Material
 {
     arln::Pipeline p;
-    arln::Descriptor d;
 };
 
 struct Model

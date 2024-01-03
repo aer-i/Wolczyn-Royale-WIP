@@ -8,19 +8,19 @@ Scene::Scene(arln::Window& t_w, arln::Context& t_c) noexcept : m_ctx{ t_c }, m_c
 
     auto pi = arln::GraphicsPipelineInfo{
         .vertShaderPath = "shaders/bg.vert.spv", .fragShaderPath = "shaders/bg.frag.spv",
-        .depthFormat = m_ctx.getDefaultDepthFormat(), .frontFace = arln::FrontFace::eClockwise,
-        .cullMode = arln::CullMode::eBack, .depthStencil = true
+        .depthFormat = m_ctx.getDefaultDepthFormat(), .frontFace = arln::FrontFace::eCounterClockwise,
+        .cullMode = arln::CullMode::eFront, .depthStencil = true
     }; pi.pushConstants << arln::PushConstantRange(arln::ShaderStageBits::eVertex, sizeof(arln::mat4), 0);
 
-    //this->lMhs("kitten", "../../assets/kitten.obj");
+    this->lMhs("kitten", "../../assets/kitten.obj");
     this->lMhs("zuzanna", "../../assets/zuzanna.obj");
     this->lMtr("default", std::move(pi));
 
     this->lMdl("zuzanna", "default");
+    this->lMdl("kitten", "default");
     this->lMdl("zuzanna", "default");
+    this->lMdl("kitten", "default");
     this->lMdl("zuzanna", "default");
-    //this->lMdl("kitten", "default");
-    //this->lMdl("kitten", "default");
 }
 
 Scene::~Scene() noexcept {
@@ -47,22 +47,22 @@ auto Scene::lMdl(std::string_view t_msh, std::string_view t_mtr) noexcept -> v0 
     auto& mtr = m_mts[t_mtr.data()];
 
     arln::DescriptorWriter()
-        .addBuffer(mtr.d, msh.vb, 0, arln::DescriptorType::eStorageBuffer)
-        .addBuffer(mtr.d, m_ob, 1, arln::DescriptorType::eStorageBuffer).write();
+        .addBuffer(msh.d, msh.vb, 0, arln::DescriptorType::eStorageBuffer)
+        .addBuffer(msh.d, m_ob, 1, arln::DescriptorType::eStorageBuffer).write();
 
     static arln::f32 cp{ };
-    m_mls.emplace_back(msh, mtr, glm::translate(arln::mat4{1.f}, {cp++ * 3, 0, 0}));
+    m_mls.emplace_back(msh, mtr, glm::translate(arln::mat4{1.f}, {cp++ * 2.5f, 0, 0}));
 }
 
 auto Scene::lMhs(std::string_view t_n, std::string_view t_fp) noexcept -> v0 {
-    m_mhs[t_n.data()] = Mesh(t_fp);
-}
-
-auto Scene::lMtr(std::string_view t_n, arln::GraphicsPipelineInfo&& t_pi) noexcept -> v0 {
     auto ds = m_dp.addBinding(0, arln::DescriptorType::eStorageBuffer, arln::ShaderStageBits::eVertex)
         .addBinding(1, arln::DescriptorType::eStorageBuffer, arln::ShaderStageBits::eVertex)
         .createDescriptor();
-    t_pi.descriptors << ds;
+    m_mhs[t_n.data()] = Mesh(t_fp, ds);
+}
 
-    m_mts[t_n.data()] = Material(m_ctx.createGraphicsPipeline(t_pi), ds);
+auto Scene::lMtr(std::string_view t_n, arln::GraphicsPipelineInfo&& t_pi) noexcept -> v0 {
+    t_pi.descriptors << m_dp.getFirstDescriptor();
+
+    m_mts[t_n.data()] = Material(m_ctx.createGraphicsPipeline(t_pi));
 }

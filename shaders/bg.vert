@@ -1,25 +1,9 @@
 #version 460
 #extension GL_EXT_shader_16bit_storage : require
 #extension GL_EXT_shader_8bit_storage : require
+#extension GL_GOOGLE_include_directive : require
 
-struct Vertex
-{
-    float vx, vy, vz;
-    uint8_t nx, ny, nz, nw;
-    float16_t tu, tv;
-};
-
-struct MeshDraw
-{
-    vec3 position;
-    float scale;
-    vec4 orientation;
-};
-
-struct ObjectData
-{
-    mat4 model;
-};
+#include "mesh.h"
 
 vec3 rotateQuat(vec3 v, vec4 q)
 {

@@ -50,9 +50,9 @@ auto Renderer::drF(Scene& t_rnS) noexcept -> v0 {
             m_cmd.setScissor(0, 0, m_wnd.getWidth(), m_wnd.getHeight());
             m_cmd.setViewport(0, (arln::f32)m_wnd.getHeight(), (arln::f32)m_wnd.getWidth(), -(arln::f32)m_wnd.getHeight());
             m_cmd.pushConstant(m.mtr.get().p, arln::ShaderStageBits::eVertex, sizeof(pc), &pc);
-            m_cmd.bindDescriptorGraphics(m.mtr.get().p, m.mtr.get().d);
+            m_cmd.bindDescriptorGraphics(m.mtr.get().p, m.msh.get().d);
             m_cmd.bindIndexBuffer32(m.msh.get().ib);
-            m_cmd.drawIndexed(m.msh.get().ic, 1, 0, 0, i); ++i;
+            m_cmd.drawIndexed(m.msh.get().ic, 1, 0, 0, i++);
         } m_cmd.endRendering();
         m_cmd.end();
     } m_ed.r();
