@@ -50,8 +50,12 @@ auto Renderer::drF(Scene& t_rnS) noexcept -> v0 {
         m_cmd.pushConstant(t_rnS.gGp(), arln::ShaderStageBits::eVertex, sizeof(pc), &pc);
         m_cmd.bindDescriptorGraphics(t_rnS.gGp(), t_rnS.gDs());
         m_cmd.bindIndexBuffer32(t_rnS.gIb());
+
+        static int x = 0;
+        ImGui::InputInt("X", &x);
+
         for (arln::u32 i = 0; auto& m : t_rnS.gMls()) {
-            m_cmd.drawIndexed(m.msh.get().ic, 1, 0, m.msh.get().vxo, i++);
+            m_cmd.drawIndexed(m.msh.get().ic, 1, 0, m.msh.get().vxo + x, i++);
         } m_cmd.endRendering();
         m_cmd.end();
     } m_ed.r();

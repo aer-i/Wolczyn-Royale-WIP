@@ -5,7 +5,6 @@
 auto Camera::u() noexcept -> v0 {
     arln::f32 dt = Time::gDt();
     static arln::f32 sn = 0.1f;
-    constexpr arln::f32 sp = 5.f;
     auto wkp = ImGui::GetMainViewport()->WorkPos;
     ImGui::SetNextWindowPos({ wkp.x + 10, wkp.y + 60 }, ImGuiCond_Always);
     if (ImGui::Begin("Mouse settings", nullptr,
@@ -21,22 +20,31 @@ auto Camera::u() noexcept -> v0 {
         ImGui::SliderFloat("Mouse sens", &sn, 0.01f, 10.f, "%.2f");
     } ImGui::End();
 
+    glm::vec3 vel{};
+    arln::f32 sp = 5.f;
     static bool rmm = false;
+
     if (m_wn.getKeyDown(arln::Key::eEscape)) {
         rmm = !rmm;
         m_wn.setRelativeMouseMode(rmm);
     } if (m_wn.getKey(arln::Key::eW)) {
-        m_ps -= m_fr * dt * sp;
+        vel -= m_fr;
     } if (m_wn.getKey(arln::Key::eS)) {
-        m_ps += m_fr * dt * sp;
+        vel += m_fr;
     } if (m_wn.getKey(arln::Key::eD)) {
-        m_ps += m_rt * dt * sp;
+        vel += m_rt;
     } if (m_wn.getKey(arln::Key::eA)) {
-        m_ps -= m_rt * dt * sp;
+        vel -= m_rt;
     } if (m_wn.getKey(arln::Key::eE)) {
-        m_ps.y += dt * sp;
+        vel.y += 1.f;
     } if (m_wn.getKey(arln::Key::eQ)) {
-        m_ps.y -= dt * sp;
+        vel.y -= 1.f;
+    } if (m_wn.getKey(arln::Key::eLeftShift)) {
+        sp += 5.f;
+    }
+
+    if (vel != arln::vec3{0.f}) {
+        m_ps += normalize(vel) * dt * sp;
     }
 
     if (rmm) {

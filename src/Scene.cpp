@@ -23,10 +23,10 @@ Scene::Scene(arln::Window& t_w, arln::Context& t_c) noexcept : m_ctx{ t_c }, m_c
                 switch (x % 4)
                 {
                 case 3:
-                    this->lMdl("cube", "default", {-x * 3, -y * 3, -z * 3});
+                    this->lMdl("ico", "default", {-x * 3, -y * 3, -z * 3});
                     break;
                 case 2:
-                    this->lMdl("ico", "default", {-x * 3, -y * 3, -z * 3});
+                    this->lMdl("cube", "default", {-x * 3, -y * 3, -z * 3});
                     break;
                 case 1:
                     this->lMdl("zuzanna", "default", {-x * 3, -y * 3, -z * 3});
@@ -46,7 +46,7 @@ Scene::Scene(arln::Window& t_w, arln::Context& t_c) noexcept : m_ctx{ t_c }, m_c
     auto pi = arln::GraphicsPipelineInfo{
         .vertShaderPath = "shaders/bg.vert.spv", .fragShaderPath = "shaders/bg.frag.spv",
         .depthFormat = m_ctx.getDefaultDepthFormat(), .frontFace = arln::FrontFace::eCounterClockwise,
-        .cullMode = arln::CullMode::eFront, .depthStencil = true
+        .cullMode = arln::CullMode::eNone, .depthStencil = true
     }; pi.pushConstants << arln::PushConstantRange(arln::ShaderStageBits::eVertex, sizeof(arln::mat4), 0);
     pi.descriptors << m_dp.getFirstDescriptor();
     m_gp = m_ctx.createGraphicsPipeline(pi);

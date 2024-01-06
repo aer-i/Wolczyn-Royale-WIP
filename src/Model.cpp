@@ -18,7 +18,6 @@ Mesh::Mesh(std::string_view t_fp, std::vector<Vertex>& t_vb, std::vector<arln::u
         ixc += 3 * (ob->face_vertices[i] - 2);
 
     std::vector<Vertex> lvs(ixc);
-    ic = ixc;
 
     size_t vo = 0;
     size_t io = 0;
@@ -63,6 +62,7 @@ Mesh::Mesh(std::string_view t_fp, std::vector<Vertex>& t_vb, std::vector<arln::u
     meshopt_optimizeVertexCache(ii.data(), ii.data(), ixc, vc);
     meshopt_optimizeVertexFetch(vi.data(), ii.data(), ixc, vi.data(), vc, sizeof(Vertex));
 
+    ic = static_cast<arln::u32>(ii.size());
     vxo = static_cast<arln::i32>(t_vb.size());
     t_vb.insert(t_vb.end(), vi.begin(), vi.end());
     t_ib.insert(t_ib.end(), ii.begin(), ii.end());
