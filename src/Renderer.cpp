@@ -43,16 +43,15 @@ auto Renderer::drF(Scene& t_rnS) noexcept -> v0 {
         m_cmd.beginRendering(arln::RenderingInfo{
             .pColorAttachment = &cAtt, .pDepthAttachment = &dAtt
         });
-        arln::Pipeline pp{};
         auto pc = t_rnS.gCm().gPV();
+        m_cmd.bindGraphicsPipeline(t_rnS.gGp());
+        m_cmd.setScissor(0, 0, m_wnd.getWidth(), m_wnd.getHeight());
+        m_cmd.setViewport(0, (arln::f32)m_wnd.getHeight(), (arln::f32)m_wnd.getWidth(), -(arln::f32)m_wnd.getHeight());
+        m_cmd.pushConstant(t_rnS.gGp(), arln::ShaderStageBits::eVertex, sizeof(pc), &pc);
+        m_cmd.bindDescriptorGraphics(t_rnS.gGp(), t_rnS.gDs());
+        m_cmd.bindIndexBuffer32(t_rnS.gIb());
         for (arln::u32 i = 0; auto& m : t_rnS.gMls()) {
-            m_cmd.bindGraphicsPipeline(m.mtr.get().p);
-            m_cmd.setScissor(0, 0, m_wnd.getWidth(), m_wnd.getHeight());
-            m_cmd.setViewport(0, (arln::f32)m_wnd.getHeight(), (arln::f32)m_wnd.getWidth(), -(arln::f32)m_wnd.getHeight());
-            m_cmd.pushConstant(m.mtr.get().p, arln::ShaderStageBits::eVertex, sizeof(pc), &pc);
-            m_cmd.bindDescriptorGraphics(m.mtr.get().p, m.msh.get().d);
-            m_cmd.bindIndexBuffer32(m.msh.get().ib);
-            m_cmd.drawIndexed(m.msh.get().ic, 1, 0, 0, i++);
+            m_cmd.drawIndexed(m.msh.get().ic, 1, 0, m.msh.get().vxo, i++);
         } m_cmd.endRendering();
         m_cmd.end();
     } m_ed.r();

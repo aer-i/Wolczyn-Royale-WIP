@@ -4,8 +4,7 @@
 #include <fast_obj.h>
 #include <meshoptimizer.h>
 
-Mesh::Mesh(std::string_view t_fp, arln::Descriptor const& t_d) noexcept
-    : d{ t_d }
+Mesh::Mesh(std::string_view t_fp, std::vector<Vertex>& t_vb, std::vector<arln::u32>& t_ib) noexcept
 {
     fastObjMesh* ob = fast_obj_read(t_fp.data());
     while (!ob) {
@@ -64,8 +63,7 @@ Mesh::Mesh(std::string_view t_fp, arln::Descriptor const& t_d) noexcept
     meshopt_optimizeVertexCache(ii.data(), ii.data(), ixc, vc);
     meshopt_optimizeVertexFetch(vi.data(), ii.data(), ixc, vi.data(), vc, sizeof(Vertex));
 
-    vb.recreate(arln::BufferUsageBits::eStorageBuffer, arln::MemoryType::eGpuOnly, vi.size() * sizeof(vi[0]));
-    ib.recreate(arln::BufferUsageBits::eIndexBuffer, arln::MemoryType::eGpuOnly, ii.size() * sizeof(ii[0]));
-    vb.writeData(vi.data(), vb.getSize());
-    ib.writeData(ii.data(), ib.getSize());
+    vxo = static_cast<arln::i32>(t_vb.size());
+    t_vb.insert(t_vb.end(), vi.begin(), vi.end());
+    t_ib.insert(t_ib.end(), ii.begin(), ii.end());
 }
