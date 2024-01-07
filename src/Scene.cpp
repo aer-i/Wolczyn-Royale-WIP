@@ -15,7 +15,7 @@ Scene::~Scene() noexcept {
     m_gp.destroy();
 }
 
-auto Scene::pmd() noexcept -> void
+auto Scene::pmd() noexcept -> v0
 {
     for (arln::i32 x = 10; x--; )
     {
@@ -25,15 +25,15 @@ auto Scene::pmd() noexcept -> void
             {
                 switch (x % 4)
                 {
-                    case 3:
-                        this->lMdl("cube", "default", {-x * 3, -y * 3, -z * 3});
-                        break;
-                    case 2:
-                        this->lMdl("zuzanna", "default", {-x * 3, -y * 3, -z * 3});
-                        break;
-                    case 1:
-                        this->lMdl("kitten", "default", {-x * 3, -y * 3, -z * 3});
-                        break;
+//                    case 3:
+//                        this->lMdl("cube", "default", {-x * 3, -y * 3, -z * 3});
+//                        break;
+//                    case 2:
+//                        this->lMdl("zuzanna", "default", {-x * 3, -y * 3, -z * 3});
+//                        break;
+//                    case 1:
+//                        this->lMdl("kitten", "default", {-x * 3, -y * 3, -z * 3});
+//                        break;
                     default:
                         this->lMdl("ico", "default", {-x * 3, -y * 3, -z * 3});
                         break;
@@ -57,7 +57,7 @@ auto Scene::lMhs(std::string_view t_n, std::string_view t_fp) noexcept -> v0 {
     m_mhs[t_n.data()] = Mesh(t_fp, m_vv);
 }
 
-auto Scene::pr() noexcept -> void
+auto Scene::pr() noexcept -> v0
 {
     m_dp = m_ctx.createDescriptorPool();
     m_ds = m_dp.addBinding(0, arln::DescriptorType::eStorageBuffer, arln::ShaderStageBits::eVertex)
@@ -84,7 +84,7 @@ auto Scene::pr() noexcept -> void
         .addBuffer(m_ds, m_ob, 1, arln::DescriptorType::eStorageBuffer).write();
 }
 
-auto Scene::pms() noexcept -> void
+auto Scene::pms() noexcept -> v0
 {
     this->lMhs("cube", "../../assets/cube.obj");
     this->lMhs("ico", "../../assets/ico.obj");

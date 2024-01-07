@@ -14,6 +14,10 @@ public:
         sV(t_t - m_ps);
     } [[nodiscard]]inline auto gPV() const noexcept -> arln::mat4 {
         return m_pr * m_vi;
+    } [[nodiscard]]inline auto gPi() const noexcept -> arln::f32 {
+        return m_pi;
+    } [[nodiscard]]inline auto gYa() const noexcept -> arln::f32 {
+        return m_ya;
     }
 private:
     arln::Window& m_wn;

@@ -43,6 +43,7 @@ auto Renderer::drF(Scene& t_rnS) noexcept -> v0 {
         m_cmd.beginRendering(arln::RenderingInfo{
             .pColorAttachment = &cAtt, .pDepthAttachment = &dAtt
         });
+        t_rnS.gSky().r(m_cmd, t_rnS.gCm());
         Mesh* pmsh{ nullptr };
         auto pc = t_rnS.gCm().gPV();
         m_cmd.bindGraphicsPipeline(t_rnS.gGp());
