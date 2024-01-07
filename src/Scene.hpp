@@ -38,7 +38,7 @@ private:
     arln::Context& m_ctx;
     arln::DescriptorPool m_dp;
     arln::Descriptor m_ds;
-    arln::Buffer m_ob, m_vb, m_ib, m_idb;
+    arln::Buffer m_ob, m_mb, m_vb, m_ib, m_idb;
     arln::Pipeline m_gp;
     Camera m_cm;
     Sky m_sky;

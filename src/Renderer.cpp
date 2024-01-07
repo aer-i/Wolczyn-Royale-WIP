@@ -44,14 +44,15 @@ auto Renderer::drF(Scene& t_rnS) noexcept -> v0 {
             .pColorAttachment = &cAtt, .pDepthAttachment = &dAtt
         });
         t_rnS.gSky().r(m_cmd, t_rnS.gCm());
-        Mesh* pmsh{ nullptr };
-        auto pc = t_rnS.gCm().gPV();
-        m_cmd.bindGraphicsPipeline(t_rnS.gGp());
+        arln::mat4 pc[2] = {
+            t_rnS.gCm().gP(),
+            t_rnS.gCm().gV()
+        }; m_cmd.bindGraphicsPipeline(t_rnS.gGp());
         m_cmd.setScissor(0, 0, m_wnd.getWidth(), m_wnd.getHeight());
         m_cmd.setViewport(0, (arln::f32)m_wnd.getHeight(), (arln::f32)m_wnd.getWidth(), -(arln::f32)m_wnd.getHeight());
-        m_cmd.pushConstant(t_rnS.gGp(), arln::ShaderStageBits::eVertex, sizeof(pc), &pc);
+        m_cmd.pushConstant(t_rnS.gGp(), arln::ShaderStageBits::eVertex, sizeof(arln::mat4) * 2, pc);
         m_cmd.bindDescriptorGraphics(t_rnS.gGp(), t_rnS.gDs());
-        m_cmd.bindIndexBuffer32(t_rnS.gIb(), 0);
+        m_cmd.bindIndexBuffer32(t_rnS.gIb());
         m_cmd.drawIndexedIndirect(t_rnS.gIdb(), 0, t_rnS.gMls().size(), sizeof(arln::DrawIndexedIndirectCommand));
         m_cmd.endRendering();
         m_cmd.end();

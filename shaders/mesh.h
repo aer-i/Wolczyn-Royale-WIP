@@ -15,4 +15,8 @@ struct MeshDraw
 struct ObjectData
 {
     mat4 model;
+    uint materialIndex;
+    uint padding1;
+    uint padding2;
+    uint padding3;
 };

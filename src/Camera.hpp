@@ -12,12 +12,14 @@ public:
     auto sV(arln::vec3 const& t_di) noexcept -> v0;
     inline auto sVT(arln::vec3 const& t_t) noexcept -> v0 {
         sV(t_t - m_ps);
-    } [[nodiscard]]inline auto gPV() const noexcept -> arln::mat4 {
-        return m_pr * m_vi;
     } [[nodiscard]]inline auto gPi() const noexcept -> arln::f32 {
         return m_pi;
     } [[nodiscard]]inline auto gYa() const noexcept -> arln::f32 {
         return m_ya;
+    } [[nodiscard]]inline auto gP() const noexcept -> arln::mat4 const& {
+        return m_pr;
+    } [[nodiscard]]inline auto gV() const noexcept -> arln::mat4 const& {
+        return m_vi;
     }
 private:
     arln::Window& m_wn;

@@ -9,6 +9,7 @@ Scene::Scene(arln::Window& t_w, arln::Context& t_c) noexcept : m_ctx{ t_c }, m_c
 
 Scene::~Scene() noexcept {
     m_ob.free();
+    m_mb.free();
     m_vb.free();
     m_ib.free();
     m_idb.free();
@@ -26,18 +27,18 @@ auto Scene::pmd() noexcept -> v0
             {
                 switch (x % 4)
                 {
-                    case 3:
-                        this->lMdl("cube", "default", {-x * 3, -y * 3, -z * 3});
-                        break;
-                    case 2:
-                        this->lMdl("zuzanna", "default", {-x * 3, -y * 3, -z * 3});
-                        break;
-                    case 1:
-                        this->lMdl("kitten", "default", {-x * 3, -y * 3, -z * 3});
-                        break;
-                    default:
-                        this->lMdl("ico", "default", {-x * 3, -y * 3, -z * 3});
-                        break;
+                case 3:
+                    this->lMdl("cube", "default", {-x * 3, -y * 3, -z * 3});
+                    break;
+                case 2:
+                    this->lMdl("zuzanna", "default", {-x * 3, -y * 3, -z * 3});
+                    break;
+                case 1:
+                    this->lMdl("kitten", "default", {-x * 3, -y * 3, -z * 3});
+                    break;
+                default:
+                    this->lMdl("ico", "default", {-x * 3, -y * 3, -z * 3});
+                    break;
                 }
             }
         }
@@ -60,21 +61,47 @@ auto Scene::lMhs(std::string_view t_n, std::string_view t_fp) noexcept -> v0 {
 
 auto Scene::pr() noexcept -> v0
 {
+    struct WD {
+        arln::mat4 mtx;
+        arln::u32 mi, p1, p2, p3;
+    };
+
+    struct Material {
+        arln::vec3 amb;
+        arln::f32 shin;
+        arln::vec3 diff, spec;
+    };
+
     m_dp = m_ctx.createDescriptorPool();
     m_ds = m_dp.addBinding(0, arln::DescriptorType::eStorageBuffer, arln::ShaderStageBits::eVertex)
         .addBinding(1, arln::DescriptorType::eStorageBuffer, arln::ShaderStageBits::eVertex)
+        .addBinding(2, arln::DescriptorType::eStorageBuffer, arln::ShaderStageBits::eFragment)
         .createDescriptor();
-    m_ob.recreate(arln::BufferUsageBits::eStorageBuffer, arln::MemoryType::eGpu, sizeof(arln::mat4) * 100000);
+    m_ob.recreate(arln::BufferUsageBits::eStorageBuffer, arln::MemoryType::eGpu, sizeof(WD) * 100000);
+    m_mb.recreate(arln::BufferUsageBits::eStorageBuffer, arln::MemoryType::eGpuOnly, sizeof(Material));
+
+    Material mt {
+        .amb = { 1.0f, 0.5f, 0.31f },
+        .shin = 32.f,
+        .diff = { 1.0f, 0.5f, 0.31f },
+        .spec = { 0.5f, 0.5f, 0.5f }
+    };
+
+    m_mb.writeData(&mt, m_mb.getSize());
 
     for (size_t i = 0; i < m_mls.size(); ++i) {
-        m_ob.writeData(&m_mls[i].mtx, sizeof(arln::mat4), i * sizeof(arln::mat4));
+        auto wd = WD{
+            .mtx = m_mls[i].mtx,
+            .mi = 0
+        };
+        m_ob.writeData(&wd, sizeof(WD), i * sizeof(WD));
     }
 
     auto pi = arln::GraphicsPipelineInfo{
         .vertShaderPath = "shaders/bg.vert.spv", .fragShaderPath = "shaders/bg.frag.spv",
         .depthFormat = m_ctx.getDefaultDepthFormat(), .frontFace = arln::FrontFace::eCounterClockwise,
         .cullMode = arln::CullMode::eFront, .depthStencil = true
-    }; pi.pushConstants << arln::PushConstantRange(arln::ShaderStageBits::eVertex, sizeof(arln::mat4), 0);
+    }; pi.pushConstants << arln::PushConstantRange(arln::ShaderStageBits::eVertex, sizeof(arln::mat4) * 2, 0);
     pi.descriptors << m_dp.getFirstDescriptor();
     m_gp = m_ctx.createGraphicsPipeline(pi);
     m_vb.recreate(arln::BufferUsageBits::eStorageBuffer, arln::MemoryType::eGpuOnly, m_vv.size() * sizeof(m_vv[0]));
@@ -84,7 +111,8 @@ auto Scene::pr() noexcept -> v0
 
     arln::DescriptorWriter()
         .addBuffer(m_ds, m_vb, 0, arln::DescriptorType::eStorageBuffer)
-        .addBuffer(m_ds, m_ob, 1, arln::DescriptorType::eStorageBuffer).write();
+        .addBuffer(m_ds, m_ob, 1, arln::DescriptorType::eStorageBuffer)
+        .addBuffer(m_ds, m_mb, 2, arln::DescriptorType::eStorageBuffer).write();
 }
 
 auto Scene::pms() noexcept -> v0
