@@ -3,6 +3,7 @@
 Scene::Scene(arln::Window& t_w, arln::Context& t_c) noexcept : m_ctx{ t_c }, m_cm{ t_w, { 0.f, 0.f, 3.f }, 90.f } {
     pms();
     pmd();
+    gidb();
     pr();
 }
 
@@ -10,6 +11,7 @@ Scene::~Scene() noexcept {
     m_ob.free();
     m_vb.free();
     m_ib.free();
+    m_idb.free();
     m_dp.destroy();
     m_gp.destroy();
 }
@@ -91,4 +93,23 @@ auto Scene::pms() noexcept -> v0
     this->lMhs("ico", "../../assets/ico.obj");
     this->lMhs("kitten", "../../assets/kitten.obj");
     this->lMhs("zuzanna", "../../assets/zuzanna.obj");
+}
+
+auto Scene::gidb() noexcept -> v0
+{
+    std::vector<arln::DrawIndexedIndirectCommand> ic;
+    ic.reserve(m_mls.size());
+
+    for (arln::u32 i{}; auto& m : m_mls) {
+        ic.push_back(arln::DrawIndexedIndirectCommand{
+            .indexCount = m.msh->ic,
+            .instanceCount = 1,
+            .firstIndex = m.msh->ixo,
+            .vertexOffset = m.msh->vxo,
+            .firstInstance = i++
+        });
+    }
+
+    m_idb.recreate(arln::BufferUsageBits::eIndirectBuffer, arln::MemoryType::eGpuOnly, ic.size() * sizeof(ic[0]));
+    m_idb.writeData(ic.data(), m_idb.getSize());
 }

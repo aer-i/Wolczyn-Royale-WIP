@@ -12,6 +12,8 @@ public:
     ~Scene() noexcept;
     [[nodiscard]]inline auto& gIb() noexcept {
         return m_ib;
+    } [[nodiscard]]inline auto& gIdb() noexcept {
+        return m_idb;
     } [[nodiscard]]inline auto& gMls() noexcept {
         return m_mls;
     } [[nodiscard]]inline auto& gCm() noexcept {
@@ -30,12 +32,13 @@ private:
     auto pr() noexcept -> v0;
     auto pms() noexcept -> v0;
     auto pmd() noexcept -> v0;
+    auto gidb() noexcept -> v0;
 
 private:
     arln::Context& m_ctx;
     arln::DescriptorPool m_dp;
     arln::Descriptor m_ds;
-    arln::Buffer m_ob, m_vb, m_ib;
+    arln::Buffer m_ob, m_vb, m_ib, m_idb;
     arln::Pipeline m_gp;
     Camera m_cm;
     Sky m_sky;

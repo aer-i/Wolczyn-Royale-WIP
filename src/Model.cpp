@@ -64,7 +64,7 @@ Mesh::Mesh(std::string_view t_fp, std::vector<Vertex>& t_vb, std::vector<arln::u
 
     ic = static_cast<arln::u32>(ii.size());
     vxo = static_cast<arln::i32>(t_vb.size());
-    ixo = static_cast<arln::i32>(t_ib.size() * sizeof(t_ib[0]));
+    ixo = static_cast<arln::i32>(t_ib.size());
     t_vb.insert(t_vb.end(), vi.begin(), vi.end());
     t_ib.insert(t_ib.end(), ii.begin(), ii.end());
 }
