@@ -51,11 +51,12 @@ auto Renderer::drF(Scene& t_rnS) noexcept -> v0 {
         m_cmd.setViewport(0, (arln::f32)m_wnd.getHeight(), (arln::f32)m_wnd.getWidth(), -(arln::f32)m_wnd.getHeight());
         m_cmd.pushConstant(t_rnS.gGp(), arln::ShaderStageBits::eVertex, sizeof(pc), &pc);
         m_cmd.bindDescriptorGraphics(t_rnS.gGp(), t_rnS.gDs());
+
         for (arln::u32 i = 0; auto& m : t_rnS.gMls()) {
             if (pmsh != m.msh) {
                 pmsh = m.msh;
-                m_cmd.bindIndexBuffer32(m.msh->ib);
-            }m_cmd.drawIndexed(m.msh->ic, 1, 0, m.msh->vxo, i++);
+                m_cmd.bindIndexBuffer32(t_rnS.gIb(), pmsh->ixo);
+            } m_cmd.drawIndexed(m.msh->ic, 1, 0, m.msh->vxo, i++);
         } m_cmd.endRendering();
         m_cmd.end();
     } m_ed.r();

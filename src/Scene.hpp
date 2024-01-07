@@ -10,7 +10,9 @@ class Scene
 public:
     Scene(arln::Window& t_w, arln::Context& t_c) noexcept;
     ~Scene() noexcept;
-    [[nodiscard]]inline auto& gMls() noexcept {
+    [[nodiscard]]inline auto& gIb() noexcept {
+        return m_ib;
+    } [[nodiscard]]inline auto& gMls() noexcept {
         return m_mls;
     } [[nodiscard]]inline auto& gCm() noexcept {
         return m_cm;
@@ -33,7 +35,7 @@ private:
     arln::Context& m_ctx;
     arln::DescriptorPool m_dp;
     arln::Descriptor m_ds;
-    arln::Buffer m_ob, m_vb;
+    arln::Buffer m_ob, m_vb, m_ib;
     arln::Pipeline m_gp;
     Camera m_cm;
     Sky m_sky;

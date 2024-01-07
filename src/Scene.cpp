@@ -7,10 +7,9 @@ Scene::Scene(arln::Window& t_w, arln::Context& t_c) noexcept : m_ctx{ t_c }, m_c
 }
 
 Scene::~Scene() noexcept {
-    for (auto& m : m_mhs)
-        m.second.ib.free();
     m_ob.free();
     m_vb.free();
+    m_ib.free();
     m_dp.destroy();
     m_gp.destroy();
 }
@@ -25,15 +24,15 @@ auto Scene::pmd() noexcept -> v0
             {
                 switch (x % 4)
                 {
-//                    case 3:
-//                        this->lMdl("cube", "default", {-x * 3, -y * 3, -z * 3});
-//                        break;
-//                    case 2:
-//                        this->lMdl("zuzanna", "default", {-x * 3, -y * 3, -z * 3});
-//                        break;
-//                    case 1:
-//                        this->lMdl("kitten", "default", {-x * 3, -y * 3, -z * 3});
-//                        break;
+                    case 3:
+                        this->lMdl("cube", "default", {-x * 3, -y * 3, -z * 3});
+                        break;
+                    case 2:
+                        this->lMdl("zuzanna", "default", {-x * 3, -y * 3, -z * 3});
+                        break;
+                    case 1:
+                        this->lMdl("kitten", "default", {-x * 3, -y * 3, -z * 3});
+                        break;
                     default:
                         this->lMdl("ico", "default", {-x * 3, -y * 3, -z * 3});
                         break;
@@ -54,7 +53,7 @@ auto Scene::lMdl(std::string_view t_msh, std::string_view t_mtr, arln::vec3 cons
 }
 
 auto Scene::lMhs(std::string_view t_n, std::string_view t_fp) noexcept -> v0 {
-    m_mhs[t_n.data()] = Mesh(t_fp, m_vv);
+    m_mhs[t_n.data()] = Mesh(t_fp, m_vv, m_iv);
 }
 
 auto Scene::pr() noexcept -> v0
@@ -77,7 +76,9 @@ auto Scene::pr() noexcept -> v0
     pi.descriptors << m_dp.getFirstDescriptor();
     m_gp = m_ctx.createGraphicsPipeline(pi);
     m_vb.recreate(arln::BufferUsageBits::eStorageBuffer, arln::MemoryType::eGpuOnly, m_vv.size() * sizeof(m_vv[0]));
+    m_ib.recreate(arln::BufferUsageBits::eIndexBuffer, arln::MemoryType::eGpuOnly, m_iv.size() * sizeof(m_iv[0]));
     m_vb.writeData(m_vv.data(), m_vb.getSize());
+    m_ib.writeData(m_iv.data(), m_ib.getSize());
 
     arln::DescriptorWriter()
         .addBuffer(m_ds, m_vb, 0, arln::DescriptorType::eStorageBuffer)
