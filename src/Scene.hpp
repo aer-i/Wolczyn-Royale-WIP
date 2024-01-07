@@ -17,17 +17,20 @@ public:
         return m_gp;
     } inline auto& gDs() noexcept {
         return m_ds;
-    } inline auto& gIb() noexcept {
-        return m_ib;
     }
     auto u() noexcept -> v0;
     auto lMdl(std::string_view t_msh, std::string_view t_mtr, arln::vec3 const& t_pos) noexcept -> v0;
     auto lMhs(std::string_view t_n, std::string_view t_fp) noexcept -> v0;
 private:
+    auto pr() noexcept -> v0;
+    auto pms() noexcept -> v0;
+    auto pmd() noexcept -> v0;
+
+private:
     arln::Context& m_ctx;
     arln::DescriptorPool m_dp;
     arln::Descriptor m_ds;
-    arln::Buffer m_ob, m_vb, m_ib;
+    arln::Buffer m_ob, m_vb;
     arln::Pipeline m_gp;
     Camera m_cm;
     std::vector<Model> m_mls;

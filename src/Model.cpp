@@ -4,7 +4,7 @@
 #include <fast_obj.h>
 #include <meshoptimizer.h>
 
-Mesh::Mesh(std::string_view t_fp, std::vector<Vertex>& t_vb, std::vector<arln::u32>& t_ib) noexcept
+Mesh::Mesh(std::string_view t_fp, std::vector<Vertex>& t_vb) noexcept
 {
     fastObjMesh* ob = fast_obj_read(t_fp.data());
     while (!ob) {
@@ -65,5 +65,6 @@ Mesh::Mesh(std::string_view t_fp, std::vector<Vertex>& t_vb, std::vector<arln::u
     ic = static_cast<arln::u32>(ii.size());
     vxo = static_cast<arln::i32>(t_vb.size());
     t_vb.insert(t_vb.end(), vi.begin(), vi.end());
-    t_ib.insert(t_ib.end(), ii.begin(), ii.end());
+    ib.recreate(arln::BufferUsageBits::eIndexBuffer, arln::MemoryType::eGpuOnly, ii.size() * sizeof(ii[0]));
+    ib.writeData(ii.data(), ib.getSize());
 }

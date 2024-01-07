@@ -9,14 +9,15 @@ struct Vertex
 };
 
 struct Mesh {
-    explicit Mesh(std::string_view t_fp, std::vector<Vertex>& t_vb, std::vector<arln::u32>& t_ib) noexcept;
+    explicit Mesh(std::string_view t_fp, std::vector<Vertex>& t_vb) noexcept;
     Mesh() = default;
+    arln::Buffer ib{};
     arln::u32 ic{};
     arln::i32 vxo{};
 };
 
 struct Model
 {
-    std::reference_wrapper<Mesh> msh;
+    Mesh* msh{ nullptr };
     arln::mat4 mtx{};
 };
