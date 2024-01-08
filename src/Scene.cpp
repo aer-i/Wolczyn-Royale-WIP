@@ -1,6 +1,6 @@
 #include "Scene.hpp"
 
-Scene::Scene(arln::Window& t_w, arln::Context& t_c) noexcept : m_ctx{ t_c }, m_cm{ t_w, { 0.f, 0.f, 3.f }, 90.f } {
+Scene::Scene(arln::Window& t_w, arln::Context& t_c) noexcept : m_ctx{ t_c }, m_cm{ t_w, { 0.f, 0.f, 3.f }, 90.f }, m_dc{ } {
     pms();
     pmd();
     gidb();
@@ -19,23 +19,23 @@ Scene::~Scene() noexcept {
 
 auto Scene::pmd() noexcept -> v0
 {
-    for (arln::i32 x = 10; x--; )
+    for (arln::i32 x = 50; x--; )
     {
-        for (arln::i32 y = 10; y--; )
+        for (arln::i32 y = 50; y--; )
         {
-            for (arln::i32 z = 10; z--; )
+            for (arln::i32 z = 50; z--; )
             {
                 switch (x % 4)
                 {
-                case 3:
-                    this->lMdl("cube", "default", {-x * 3, -y * 3, -z * 3});
-                    break;
-                case 2:
-                    this->lMdl("zuzanna", "default", {-x * 3, -y * 3, -z * 3});
-                    break;
-                case 1:
-                    this->lMdl("kitten", "default", {-x * 3, -y * 3, -z * 3});
-                    break;
+//                case 3:
+//                    this->lMdl("cube", "default", {-x * 3, -y * 3, -z * 3});
+//                    break;
+//                case 2:
+//                    this->lMdl("zuzanna", "default", {-x * 3, -y * 3, -z * 3});
+//                    break;
+//                case 1:
+//                    this->lMdl("kitten", "default", {-x * 3, -y * 3, -z * 3});
+//                    break;
                 default:
                     this->lMdl("ico", "default", {-x * 3, -y * 3, -z * 3});
                     break;
@@ -46,7 +46,7 @@ auto Scene::pmd() noexcept -> v0
 }
 
 auto Scene::u() noexcept -> v0 {
-    m_cm.sP(arln::toRadians(70), arln::f32(m_ctx.getCurrentExtent().x) / arln::f32(m_ctx.getCurrentExtent().y));
+    m_cm.sP(arln::toRadians(70), arln::f32(m_ctx.getCurrentExtent().x) / arln::f32(m_ctx.getCurrentExtent().y), 0.1f, 1024.f);
     m_cm.u();
 }
 
@@ -63,13 +63,13 @@ auto Scene::pr() noexcept -> v0
 {
     struct WD {
         arln::mat4 mtx;
-        arln::u32 mi, p1, p2, p3;
+        alignas(16) arln::u32 mi;
     };
 
     struct Material {
         arln::vec3 amb;
         arln::f32 shin;
-        arln::vec3 diff, spec;
+        alignas(16) arln::vec3 diff, spec;
     };
 
     m_dp = m_ctx.createDescriptorPool();
@@ -77,13 +77,13 @@ auto Scene::pr() noexcept -> v0
         .addBinding(1, arln::DescriptorType::eStorageBuffer, arln::ShaderStageBits::eVertex)
         .addBinding(2, arln::DescriptorType::eStorageBuffer, arln::ShaderStageBits::eFragment)
         .createDescriptor();
-    m_ob.recreate(arln::BufferUsageBits::eStorageBuffer, arln::MemoryType::eGpu, sizeof(WD) * 100000);
+    m_ob.recreate(arln::BufferUsageBits::eStorageBuffer, arln::MemoryType::eGpu, sizeof(WD) * 1'000'000);
     m_mb.recreate(arln::BufferUsageBits::eStorageBuffer, arln::MemoryType::eGpuOnly, sizeof(Material));
 
     Material mt {
-        .amb = { 1.0f, 0.5f, 0.31f },
-        .shin = 32.f,
-        .diff = { 1.0f, 0.5f, 0.31f },
+        .amb = { 0.0f, 0.1f, 0.06f },
+        .shin = 0.25 * 128.f,
+        .diff = { 0.0f, 0.51f, 0.51f },
         .spec = { 0.5f, 0.5f, 0.5f }
     };
 
@@ -125,17 +125,21 @@ auto Scene::pms() noexcept -> v0
 
 auto Scene::gidb() noexcept -> v0
 {
+    m_dc = 0;
     std::vector<arln::DrawIndexedIndirectCommand> ic;
-    ic.reserve(m_mls.size());
 
-    for (arln::u32 i{}; auto& m : m_mls) {
+    for (arln::u32 i = 0; auto& m : m_mls) {
+
         ic.push_back(arln::DrawIndexedIndirectCommand{
             .indexCount = m.msh->ic,
-            .instanceCount = 1,
+            .instanceCount = 50*50*50,
             .firstIndex = m.msh->ixo,
             .vertexOffset = m.msh->vxo,
             .firstInstance = i++
         });
+
+        ++m_dc;
+        break;
     }
 
     m_idb.recreate(arln::BufferUsageBits::eIndirectBuffer, arln::MemoryType::eGpuOnly, ic.size() * sizeof(ic[0]));

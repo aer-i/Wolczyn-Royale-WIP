@@ -5,7 +5,7 @@ struct Vertex
 {
     arln::f32 vx, vy, vz;
     arln::u8  nx, ny, nz, nw;
-    arln::u16 tu, tv;
+    arln::u32 uv;
 };
 
 struct Mesh {

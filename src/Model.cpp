@@ -41,8 +41,10 @@ Mesh::Mesh(std::string_view t_fp, std::vector<Vertex>& t_vb, std::vector<arln::u
             v.nx = arln::u8(ob->normals[gi.n * 3 + 0] * 127.f + 127.5f);
             v.ny = arln::u8(ob->normals[gi.n * 3 + 1] * 127.f + 127.5f);
             v.nz = arln::u8(ob->normals[gi.n * 3 + 2] * 127.f + 127.5f);
-            v.tu = meshopt_quantizeHalf(ob->texcoords[gi.t * 2 + 0]);
-            v.tv = meshopt_quantizeHalf(ob->texcoords[gi.t * 2 + 1]);
+            v.uv = glm::packUnorm2x16({
+                meshopt_quantizeHalf(ob->texcoords[gi.t * 2 + 0]),
+                meshopt_quantizeHalf(ob->texcoords[gi.t * 2 + 1])
+            });
         }
 
         io += ob->face_vertices[i];

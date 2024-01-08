@@ -24,6 +24,8 @@ public:
         return m_ds;
     } [[nodiscard]]inline auto& gSky() noexcept {
         return m_sky;
+    } [[nodiscard]]inline auto gDc() const noexcept {
+        return m_dc;
     }
     auto u() noexcept -> v0;
     auto lMdl(std::string_view t_msh, std::string_view t_mtr, arln::vec3 const& t_pos) noexcept -> v0;
@@ -40,6 +42,7 @@ private:
     arln::Descriptor m_ds;
     arln::Buffer m_ob, m_mb, m_vb, m_ib, m_idb;
     arln::Pipeline m_gp;
+    arln::u32 m_dc;
     Camera m_cm;
     Sky m_sky;
     std::vector<Model> m_mls;

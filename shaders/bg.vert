@@ -1,5 +1,4 @@
 #version 460
-#extension GL_EXT_shader_16bit_storage : require
 #extension GL_EXT_shader_8bit_storage : require
 #extension GL_GOOGLE_include_directive : require
 
@@ -35,10 +34,10 @@ void main()
 {
     vec3 position = vec3(vertices[gl_VertexIndex].vx, vertices[gl_VertexIndex].vy, vertices[gl_VertexIndex].vz);
     vec3 normal = vec3(int(vertices[gl_VertexIndex].nx), int(vertices[gl_VertexIndex].ny), int(vertices[gl_VertexIndex].nz)) / 127.0 - 1.0;
-    //vec2 texcoord = vec2(vertices[gl_VertexIndex].tu, vertices[gl_VertexIndex].tv);
-    fragNormal = mat3(transpose(inverse(pc.view * objects[gl_BaseInstance].model))) * normal;
-    fragPos = vec3(pc.view * objects[gl_BaseInstance].model * vec4(position, 1));
+    vec2 texcoord = unpackUnorm2x16(vertices[gl_VertexIndex].uv);
+    fragNormal = mat3(transpose(inverse(pc.view * objects[gl_InstanceIndex].model))) * normal;
+    fragPos = vec3(pc.view * objects[gl_InstanceIndex].model * vec4(position, 1));
     fragLightPos = vec3(pc.view * vec4(0.0, 2.0, 0.0, 1.0));
-    fragMaterialId = objects[gl_BaseInstance].materialIndex;
-    gl_Position = pc.projection * pc.view * objects[gl_BaseInstance].model * vec4(position, 1);
+    fragMaterialId = objects[gl_InstanceIndex].materialIndex;
+    gl_Position = pc.projection * pc.view * objects[gl_InstanceIndex].model * vec4(position, 1);
 }

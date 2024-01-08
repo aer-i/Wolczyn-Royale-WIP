@@ -53,7 +53,7 @@ auto Renderer::drF(Scene& t_rnS) noexcept -> v0 {
         m_cmd.pushConstant(t_rnS.gGp(), arln::ShaderStageBits::eVertex, sizeof(arln::mat4) * 2, pc);
         m_cmd.bindDescriptorGraphics(t_rnS.gGp(), t_rnS.gDs());
         m_cmd.bindIndexBuffer32(t_rnS.gIb());
-        m_cmd.drawIndexedIndirect(t_rnS.gIdb(), 0, t_rnS.gMls().size(), sizeof(arln::DrawIndexedIndirectCommand));
+        m_cmd.drawIndexedIndirect(t_rnS.gIdb(), 0, t_rnS.gDc(), sizeof(arln::DrawIndexedIndirectCommand));
         m_cmd.endRendering();
         m_cmd.end();
     } m_ed.r();

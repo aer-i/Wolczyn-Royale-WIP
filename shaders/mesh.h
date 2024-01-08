@@ -2,7 +2,7 @@ struct Vertex
 {
     float vx, vy, vz;
     uint8_t nx, ny, nz, nw;
-    float16_t tu, tv;
+    uint uv;
 };
 
 struct MeshDraw
@@ -16,7 +16,4 @@ struct ObjectData
 {
     mat4 model;
     uint materialIndex;
-    uint padding1;
-    uint padding2;
-    uint padding3;
 };
