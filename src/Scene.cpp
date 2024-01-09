@@ -19,23 +19,23 @@ Scene::~Scene() noexcept {
 
 auto Scene::pmd() noexcept -> v0
 {
-    for (arln::i32 x = 50; x--; )
+    for (arln::i32 x = 10; x--; )
     {
-        for (arln::i32 y = 50; y--; )
+        for (arln::i32 y = 10; y--; )
         {
-            for (arln::i32 z = 50; z--; )
+            for (arln::i32 z = 10; z--; )
             {
                 switch (x % 4)
                 {
-//                case 3:
-//                    this->lMdl("cube", "default", {-x * 3, -y * 3, -z * 3});
-//                    break;
-//                case 2:
-//                    this->lMdl("zuzanna", "default", {-x * 3, -y * 3, -z * 3});
-//                    break;
-//                case 1:
-//                    this->lMdl("kitten", "default", {-x * 3, -y * 3, -z * 3});
-//                    break;
+                case 3:
+                    this->lMdl("cube", "default", {-x * 3, -y * 3, -z * 3});
+                    break;
+                case 2:
+                    this->lMdl("zuzanna", "default", {-x * 3, -y * 3, -z * 3});
+                    break;
+                case 1:
+                    this->lMdl("kitten", "default", {-x * 3, -y * 3, -z * 3});
+                    break;
                 default:
                     this->lMdl("ico", "default", {-x * 3, -y * 3, -z * 3});
                     break;
@@ -127,20 +127,40 @@ auto Scene::gidb() noexcept -> v0
 {
     m_dc = 0;
     std::vector<arln::DrawIndexedIndirectCommand> ic;
+    Mesh* pms{ m_mls.front().msh };
+    arln::u32 i = 0, idc = 0, pid = 0;
 
-    for (arln::u32 i = 0; auto& m : m_mls) {
+    for (auto& m : m_mls) {
 
-        ic.push_back(arln::DrawIndexedIndirectCommand{
-            .indexCount = m.msh->ic,
-            .instanceCount = 50*50*50,
-            .firstIndex = m.msh->ixo,
-            .vertexOffset = m.msh->vxo,
-            .firstInstance = i++
-        });
+        ++idc;
 
-        ++m_dc;
-        break;
+        if (pms != m.msh)
+        {
+            pms = m.msh;
+            ic.push_back(arln::DrawIndexedIndirectCommand{
+                .indexCount = m.msh->ic,
+                .instanceCount = idc,
+                .firstIndex = m.msh->ixo,
+                .vertexOffset = m.msh->vxo,
+                .firstInstance = pid
+            });
+
+            ++m_dc;
+            idc = 0;
+            pid = i;
+        }
+
+        ++i;
     }
+
+    ++idc; ++m_dc;
+    ic.push_back(arln::DrawIndexedIndirectCommand{
+        .indexCount = pms->ic,
+        .instanceCount = idc,
+        .firstIndex = pms->ixo,
+        .vertexOffset = pms->vxo,
+        .firstInstance = pid
+    });
 
     m_idb.recreate(arln::BufferUsageBits::eIndirectBuffer, arln::MemoryType::eGpuOnly, ic.size() * sizeof(ic[0]));
     m_idb.writeData(ic.data(), m_idb.getSize());
