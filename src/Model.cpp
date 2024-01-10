@@ -69,4 +69,13 @@ Mesh::Mesh(std::string_view t_fp, std::vector<Vertex>& t_vb, std::vector<arln::u
     ixo = static_cast<arln::i32>(t_ib.size());
     t_vb.insert(t_vb.end(), vi.begin(), vi.end());
     t_ib.insert(t_ib.end(), ii.begin(), ii.end());
+
+    for (auto& v : vi){
+        ctr += arln::vec3(v.vx, v.vy, v.vz);
+    }
+    ctr /= arln::f32(vi.size());
+
+    for (auto& v : vi){
+        rad = std::max(rad, glm::distance(ctr, arln::vec3(v.vx, v.vy, v.vz)));
+    }
 }

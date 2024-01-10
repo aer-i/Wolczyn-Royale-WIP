@@ -2,6 +2,7 @@
 #include "Camera.hpp"
 #include "Model.hpp"
 #include "Sky.hpp"
+#include "Frustum.hpp"
 #include <unordered_map>
 
 class Scene
@@ -28,8 +29,10 @@ public:
         return m_dc;
     }
     auto u() noexcept -> v0;
-    auto lMdl(std::string_view t_msh, std::string_view t_mtr, arln::vec3 const& t_pos) noexcept -> v0;
+    auto lMdl(std::string_view t_msh, std::string_view t_mtr, arln::vec3 const& t_pos = {},
+              arln::vec3 const& t_rot = {}, arln::vec3 const& t_scl = arln::vec3{1.f}) noexcept -> v0;
     auto lMhs(std::string_view t_n, std::string_view t_fp) noexcept -> v0;
+    auto lMtr(std::string_view t_n, arln::vec3 const& t_a, arln::vec3 const& t_d, arln::vec3 const& t_s, arln::f32 t_shn) noexcept -> v0;
 private:
     auto pr() noexcept -> v0;
     auto pms() noexcept -> v0;
@@ -45,8 +48,11 @@ private:
     arln::u32 m_dc;
     Camera m_cm;
     Sky m_sky;
+    Frustum m_fru;
     std::vector<Model> m_mls;
+    std::vector<Material> m_mtHls;
     std::unordered_map<std::string, Mesh> m_mhs;
+    std::unordered_map<std::string, arln::u32> m_mts;
     std::vector<Vertex> m_vv;
     std::vector<arln::u32> m_iv;
 };
