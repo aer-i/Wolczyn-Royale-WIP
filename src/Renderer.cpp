@@ -3,14 +3,27 @@
 Renderer::Renderer(arln::Window& t_w, arln::Context& t_c) noexcept : m_wnd{ t_w }, m_ctx{ t_c },
     m_ed{ t_w, t_c } {
     m_cmd = m_ctx.allocateCommandBuffer();
-    m_dAtt.recreate(
+    m_gCmd = m_ctx.allocateCommandBuffer();
+    m_cAtt.recreate(
+        m_ctx.getCurrentExtent().x,
+        m_ctx.getCurrentExtent().y,
+        m_ctx.getDefaultColorFormat(),
+        arln::ImageUsageBits::eColorAttachment | arln::ImageUsageBits::eSampled,
+        arln::MemoryType::eDedicated
+    ); m_dAtt.recreate(
         m_ctx.getCurrentExtent().x,
         m_ctx.getCurrentExtent().y,
         m_ctx.getDefaultDepthFormat(),
         arln::ImageUsageBits::eDepthStencilAttachment,
         arln::MemoryType::eDedicated
     ); m_ctx.setResizeCallback([&](arln::u32 t_w, arln::u32 t_h){
-        m_dAtt.recreate(
+        m_cAtt.recreate(
+            t_w,
+            t_h,
+            m_ctx.getDefaultColorFormat(),
+            arln::ImageUsageBits::eColorAttachment,
+            arln::MemoryType::eDedicated
+        ); m_dAtt.recreate(
             t_w,
             t_h,
             m_ctx.getDefaultDepthFormat(),
@@ -20,7 +33,9 @@ Renderer::Renderer(arln::Window& t_w, arln::Context& t_c) noexcept : m_wnd{ t_w 
 }
 
 auto Renderer::drF(Scene& t_rnS) noexcept -> v0 {
-    m_ctx.beginFrame(); {
+    m_ctx.beginFrame();
+    m_tp.enq([&]
+    {
         auto cAtt = arln::ColorAttachmentInfo {
             .clearColor = { .5f, .5f, .75f, 1.f },
             .image = m_ctx.getPresentImage()
@@ -55,11 +70,24 @@ auto Renderer::drF(Scene& t_rnS) noexcept -> v0 {
         m_cmd.bindIndexBuffer32(t_rnS.gIb());
         m_cmd.drawIndexedIndirect(t_rnS.gIdb(), 0, t_rnS.gDc(), sizeof(arln::DrawIndexedIndirectCommand));
         m_cmd.endRendering();
+        m_cmd.transitionImages(arln::ImageTransitionInfo{
+            .image = m_ctx.getPresentImage(),
+            .oldLayout = arln::ImageLayout::eColorAttachment, .newLayout = arln::ImageLayout::ePresentSrc,
+            .srcStageMask = arln::PipelineStageBits::eColorAttachmentOutput, .dstStageMask = arln::PipelineStageBits::eColorAttachmentOutput,
+            .srcAccessMask = arln::AccessBits::eColorAttachmentWrite, .dstAccessMask = arln::AccessBits::eNone
+        });
         m_cmd.end();
-    } m_ed.r();
-    m_ctx.endFrame({ m_cmd, m_ed.gc() });
+    });
+
+    m_tp.enq([&]{
+        m_ed.r(m_gCmd);
+    });
+
+    m_tp.w();
+    m_ctx.endFrame({ m_cmd, m_gCmd });
 }
 
 Renderer::~Renderer() noexcept {
     m_dAtt.free();
+    m_cAtt.free();
 }

@@ -4,3 +4,5 @@
 #include "math.h"
 
 // TODO
+
+void main() {}

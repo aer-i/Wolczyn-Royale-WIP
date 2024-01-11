@@ -20,11 +20,11 @@ Scene::~Scene() noexcept {
 
 auto Scene::pmd() noexcept -> v0
 {
-    for (arln::i32 x = 25; x--; )
+    for (arln::i32 x = 15; x--; )
     {
-        for (arln::i32 y = 25; y--; )
+        for (arln::i32 y = 15; y--; )
         {
-            for (arln::i32 z = 25; z--; )
+            for (arln::i32 z = 15; z--; )
             {
                 switch (x % 4)
                 {
@@ -44,6 +44,8 @@ auto Scene::pmd() noexcept -> v0
             }
         }
     }
+
+
 }
 
 static inline auto nP(arln::vec4 p) noexcept -> arln::vec4 {
@@ -53,12 +55,6 @@ static inline auto nP(arln::vec4 p) noexcept -> arln::vec4 {
 auto Scene::u() noexcept -> v0 {
     m_cm.sP(arln::toRadians(70), arln::f32(m_ctx.getCurrentExtent().x) / arln::f32(m_ctx.getCurrentExtent().y), 0.1f, 1024.f);
     m_cm.u();
-
-    static bool ef = true;
-    ImGui::Checkbox("Enable frustum culling", &ef);
-    if (ef) {
-        gidb();
-    }
 }
 
 auto Scene::lMdl(std::string_view t_msh, std::string_view t_mtr, arln::vec3 const& t_pos,
@@ -71,8 +67,7 @@ auto Scene::lMhs(std::string_view t_n, std::string_view t_fp) noexcept -> v0 {
     m_mhs[t_n.data()] = Mesh(t_fp, m_vv, m_iv);
 }
 
-auto Scene::lMtr(std::string_view t_n, const arln::vec3& t_a, const arln::vec3& t_d, const arln::vec3& t_s, arln::f32 t_shn) noexcept -> v0
-{
+auto Scene::lMtr(std::string_view t_n, const arln::vec3& t_a, const arln::vec3& t_d, const arln::vec3& t_s, arln::f32 t_shn) noexcept -> v0 {
     m_mts[t_n.data()] = static_cast<arln::u32>(m_mtHls.size());
     m_mtHls.emplace_back(Material{
         .amb = t_a,
@@ -99,13 +94,14 @@ auto Scene::pr() noexcept -> v0
 
     m_mb.writeData(m_mtHls.data(), m_mb.getSize());
 
+    std::vector<WD> wds(m_mls.size());
+
     for (size_t i = 0; i < m_mls.size(); ++i) {
-        auto wd = WD{
-            .mtx = m_mls[i].gMtx(),
-            .mi = m_mls[i].mtID
-        };
-        m_ob.writeData(&wd, sizeof(WD), i * sizeof(WD));
+        wds[i].mtx = m_mls[i].gMtx();
+        wds[i].mi = m_mls[i].mtID;
     }
+
+    m_ob.writeData(wds.data(), m_ob.getSize());
 
     auto pi = arln::GraphicsPipelineInfo{
         .vertShaderPath = "shaders/bg.vert.spv", .fragShaderPath = "shaders/bg.frag.spv",
@@ -141,44 +137,19 @@ auto Scene::pms() noexcept -> v0
 auto Scene::gidb() noexcept -> v0
 {
     std::vector<arln::DrawIndexedIndirectCommand> ic;
-    ic.reserve(m_dc);
-    arln::u32 i = 0;
-    m_dc = 0;
+    ic.reserve(m_mls.size());
 
-    m_fru.u(m_cm.gP() * m_cm.gV());
-
-    for (auto& m : m_mls) {
-        arln::vec3 ctr = m.msh->ctr * m.scl + m.pos;
-
-        if (m_fru.cS(ctr, m.msh->rad))
-        {
-            ic.emplace_back(arln::DrawIndexedIndirectCommand{
-                .indexCount = m.msh->ic,
-                .instanceCount = 1,
-                .firstIndex = m.msh->ixo,
-                .vertexOffset = m.msh->vxo,
-                .firstInstance = i
-            });
-
-            ++m_dc;
-        }
-
-        ++i;
-    }
-
-    ImGui::Text("Draw count %u", m_dc);
-
-    if (ic.empty()) {
-        ++m_dc; ic.push_back(arln::DrawIndexedIndirectCommand{
-            .indexCount = 0,
-            .instanceCount = 0,
-            .firstIndex = 0,
-            .vertexOffset = 0,
-            .firstInstance = 0
+    for (m_dc = 0; m_dc < m_mls.size(); ++m_dc) {
+        ic.emplace_back(arln::DrawIndexedIndirectCommand{
+            .indexCount = m_mls[m_dc].msh->ic,
+            .instanceCount = 1,
+            .firstIndex = m_mls[m_dc].msh->ixo,
+            .vertexOffset = m_mls[m_dc].msh->vxo,
+            .firstInstance = m_dc
         });
     }
 
-    m_idb.recreate(arln::BufferUsageBits::eIndirectBuffer, arln::MemoryType::eGpu, ic.size() * sizeof(ic[0]));
+    m_idb.recreate(arln::BufferUsageBits::eIndirectBuffer, arln::MemoryType::eGpuOnly, ic.size() * sizeof(ic[0]));
     m_idb.writeData(ic.data(), m_idb.getSize());
 }
 
