@@ -92,15 +92,16 @@ auto Scene::pr() noexcept -> v0
     m_ds = m_dp.addBinding(0, arln::DescriptorType::eStorageBuffer, arln::ShaderStageBits::eVertex)
         .addBinding(1, arln::DescriptorType::eStorageBuffer, arln::ShaderStageBits::eVertex)
         .addBinding(2, arln::DescriptorType::eStorageBuffer, arln::ShaderStageBits::eFragment)
-        .addBinding(3, arln::DescriptorType::eCombinedImageSampler, arln::ShaderStageBits::eFragment, 1024)
+        .addBinding(3, arln::DescriptorType::eCombinedImageSampler, arln::ShaderStageBits::eFragment, 64)
         .createDescriptor();
     m_ob.recreate(arln::BufferUsageBits::eStorageBuffer, arln::MemoryType::eGpuOnly, sizeof(WD) * m_mls.size());
     m_mb.recreate(arln::BufferUsageBits::eStorageBuffer, arln::MemoryType::eGpuOnly, sizeof(Material) * m_mtHls.size());
     m_sm = m_ctx.createSampler(arln::SamplerOptions{
+        .magFilter = arln::Filter::eLinear,
+        .minFilter = arln::Filter::eLinear,
         .addressModeU = arln::SamplerAddressMode::eRepeat,
         .addressModeV = arln::SamplerAddressMode::eRepeat,
         .addressModeW = arln::SamplerAddressMode::eRepeat,
-        .unnormalizedCoordinates = false
     });
 
     m_mb.writeData(m_mtHls.data(), m_mb.getSize());
@@ -128,7 +129,7 @@ auto Scene::pr() noexcept -> v0
 
     int w, h, c;
     arln::u8* d = stbi_load("../../assets/container.png", &w, &h, &c, 0);
-    m_tx1.recreate(w, h, m_ctx.getDefaultColorFormat(), arln::ImageUsageBits::eSampled, arln::MemoryType::eGpuOnly);
+    m_tx1.recreate(w, h, arln::Format::eR8G8B8A8Unorm, arln::ImageUsageBits::eSampled, arln::MemoryType::eGpuOnly);
     m_tx1.transition(arln::ImageLayout::eUndefined, arln::ImageLayout::eTransferDst,
                     arln::PipelineStageBits::eTopOfPipe, arln::PipelineStageBits::eTransfer,
                     0, arln::AccessBits::eTransferWrite);
@@ -139,7 +140,7 @@ auto Scene::pr() noexcept -> v0
     stbi_image_free(d);
 
     d = stbi_load("../../assets/containerSpec.png", &w, &h, &c, 0);
-    m_tx2.recreate(w, h, m_ctx.getDefaultColorFormat(), arln::ImageUsageBits::eSampled, arln::MemoryType::eGpuOnly);
+    m_tx2.recreate(w, h, arln::Format::eR8G8B8A8Unorm, arln::ImageUsageBits::eSampled, arln::MemoryType::eGpuOnly);
     m_tx2.transition(arln::ImageLayout::eUndefined, arln::ImageLayout::eTransferDst,
                      arln::PipelineStageBits::eTopOfPipe, arln::PipelineStageBits::eTransfer,
                      0, arln::AccessBits::eTransferWrite);
@@ -160,7 +161,7 @@ auto Scene::pr() noexcept -> v0
 auto Scene::pms() noexcept -> v0
 {
     this->lMtr("gold", {0.24725f, 0.1995f, 0.0745f}, {0.75164f, 0.60648f, 0.22648f}, {0.628281f, 0.555802f, 0.366065f}, 0.4f * 128.f);
-    this->lMtr("cyan rubber", {0.f, 0.05f, 0.05f}, {0.4f, 0.5f, 0.5f}, {0.04f, 0.7f, 0.7f}, 0.078125f * 128.f);
+    this->lMtr("cyan rubber", {0.f, 0.05f, 0.05f}, {0.4f, 0.5f, 0.5f}, {0.04f, 0.7f, 0.7f}, 0.1 * 128.f);
     this->lMtr("red rubber", {0.05f, 0.0f, 0.0f}, {0.5f, 0.4f, 0.4f}, {0.7f, 0.04f, 0.04f}, 0.078125f * 128.f);
     this->lMtr("turquoise", {0.1f, 0.18725f, 0.1745f}, {0.396f, 0.74151f, 0.69102f}, {0.297254f, 0.30829f, 0.306678f}, 0.1 * 128.f);
 
