@@ -45,6 +45,8 @@ private:
     arln::Descriptor m_ds;
     arln::Buffer m_ob, m_mb, m_vb, m_ib, m_idb;
     arln::Pipeline m_gp;
+    arln::Sampler m_sm;
+    arln::Image m_tx1, m_tx2;
     arln::u32 m_dc;
     Camera m_cm;
     Sky m_sky;

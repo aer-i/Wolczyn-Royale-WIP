@@ -5,7 +5,7 @@ struct Vertex
 {
     arln::f32 vx, vy, vz;
     arln::u8  nx, ny, nz, nw;
-    arln::u32 uv;
+    arln::f32 u, v;
 };
 
 struct Mesh {
@@ -32,7 +32,6 @@ struct Model
 };
 
 struct Material {
-    arln::vec3 amb;
+    arln::u32 dt, st;
     arln::f32 shin;
-    alignas(16) arln::vec3 diff, spec;
 };

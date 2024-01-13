@@ -2,7 +2,7 @@ struct Vertex
 {
     float vx, vy, vz;
     uint8_t nx, ny, nz, nw;
-    uint uv;
+    float u, v;
 };
 
 struct MeshDraw

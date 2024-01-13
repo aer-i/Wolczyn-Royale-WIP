@@ -22,17 +22,18 @@ layout(std140, set = 0, binding = 1) readonly buffer ObjectBuffer
 };
 
 layout(location = 0) out vec3 fragNormal;
-layout(location = 1) out vec3 fragPos;
-layout(location = 2) out vec3 fragLightPos;
-layout(location = 3) out uint fragMaterialId;
+layout(location = 1) out vec2 fragUV;
+layout(location = 2) out vec3 fragPos;
+layout(location = 3) out vec3 fragLightPos;
+layout(location = 4) out uint fragMaterialId;
 
 void main()
 {
     vec3 position = vec3(vertices[gl_VertexIndex].vx, vertices[gl_VertexIndex].vy, vertices[gl_VertexIndex].vz);
     vec3 normal = vec3(int(vertices[gl_VertexIndex].nx), int(vertices[gl_VertexIndex].ny), int(vertices[gl_VertexIndex].nz)) / 127.0 - 1.0;
-    //vec2 texcoord = unpackUnorm2x16(vertices[gl_VertexIndex].uv);
     fragNormal = mat3(transpose(inverse(pc.view * objects[gl_InstanceIndex].model))) * normal;
     fragPos = vec3(pc.view * objects[gl_InstanceIndex].model * vec4(position, 1));
+    fragUV = vec2(vertices[gl_VertexIndex].u, vertices[gl_VertexIndex].v);
     fragLightPos = vec3(pc.view * vec4(0.0, 2.0, 0.0, 1.0));
     fragMaterialId = objects[gl_InstanceIndex].materialIndex;
     gl_Position = pc.projection * pc.view * objects[gl_InstanceIndex].model * vec4(position, 1);
