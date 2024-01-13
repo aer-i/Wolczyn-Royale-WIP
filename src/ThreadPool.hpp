@@ -4,6 +4,7 @@
 #include <mutex>
 #include <queue>
 #include <functional>
+#include <condition_variable>
 
 class Thread {
     using v0 = void;
