@@ -29,9 +29,13 @@ Engine::Engine() noexcept
             .presentMode = arln::PresentMode::eNoSync
         }
     }, m_rn{ m_wn, m_cx }
-{ m_ss.emplace_back(m_wn, m_cx);}
+{ m_ss.emplace_back(m_wn);}
 
 auto Engine::exe() noexcept -> v0 {
+    m_ss[g_cs].pms();
+    m_ss[g_cs].pmd();
+    m_ss[g_cs].pr();
+
     while (!m_wn.shouldClose()) {
         m_wn.pollEvents();
         Time::u();

@@ -7,6 +7,7 @@ target_sources(${PROJECT_NAME} PUBLIC
     Renderer.cpp
     Editor.cpp
     Scene.cpp
+    SceneLoader.cpp
     Camera.cpp
     Model.cpp
     Sky.cpp
