@@ -6,7 +6,7 @@ auto Camera::u() noexcept -> v0 {
     arln::f32 dt = Time::gDt();
     static arln::f32 sn = 0.1f;
     auto wkp = ImGui::GetMainViewport()->WorkPos;
-    ImGui::SetNextWindowPos({ wkp.x + 10, wkp.y + 60 }, ImGuiCond_Always);
+    ImGui::SetNextWindowPos({ wkp.x + 2, wkp.y + 70 }, ImGuiCond_Always);
     if (ImGui::Begin("Mouse settings", nullptr,
              ImGuiWindowFlags_NoDecoration |
              ImGuiWindowFlags_AlwaysAutoResize |
@@ -55,11 +55,7 @@ auto Camera::u() noexcept -> v0 {
     if (m_pi > 89.9f) m_pi = 89.9f;
     if (m_pi < -89.9f) m_pi = -89.9f;
 
-    arln::f32 x = std::cos(arln::toRadians(m_ya)) * std::cos(arln::toRadians(m_pi)),
-              y = std::sin(arln::toRadians(m_pi)),
-              z = std::sin(arln::toRadians(m_ya)) * std::cos(arln::toRadians(m_pi));
-
-    m_fr = normalize(glm::vec3{x, y, z});
+    m_fr = normalize(this->gRt());
     m_rt = normalize(cross(m_fr, { 0.f, 1.f, 0.f }));
     m_up = normalize(cross(m_rt, m_fr));
 

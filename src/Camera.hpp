@@ -14,12 +14,20 @@ public:
         sV(t_t - m_ps);
     } [[nodiscard]]inline auto gPi() const noexcept -> arln::f32 {
         return m_pi;
+    } [[nodiscard]]inline auto gPs() const noexcept -> arln::vec3 const& {
+        return m_ps;
+    } [[nodiscard]]inline auto gFr() const noexcept -> arln::vec3 const& {
+        return m_fr;
     } [[nodiscard]]inline auto gYa() const noexcept -> arln::f32 {
         return m_ya;
     } [[nodiscard]]inline auto gP() const noexcept -> arln::mat4 const& {
         return m_pr;
     } [[nodiscard]]inline auto gV() const noexcept -> arln::mat4 const& {
         return m_vi;
+    } [[nodiscard]]inline auto gRt() const noexcept -> arln::vec3 const {
+        return glm::vec3{ std::cos(arln::toRadians(m_ya)) * std::cos(arln::toRadians(m_pi)),
+                          std::sin(arln::toRadians(m_pi)),
+                          std::sin(arln::toRadians(m_ya)) * std::cos(arln::toRadians(m_pi))};
     }
 private:
     arln::Window& m_wn;

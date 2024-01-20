@@ -12,6 +12,7 @@ target_sources(${PROJECT_NAME} PUBLIC
     Model.cpp
     Sky.cpp
     ThreadPool.cpp
+    Physics.cpp
 )
 
 target_link_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/)

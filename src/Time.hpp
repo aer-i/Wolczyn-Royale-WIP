@@ -1,5 +1,6 @@
 #pragma once
 #include <chrono>
+#include <Arln.hpp>
 
 class Time {
     using v0 = void;

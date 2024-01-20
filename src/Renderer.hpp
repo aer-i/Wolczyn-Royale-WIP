@@ -15,6 +15,8 @@ private:
     arln::Context& m_ctx;
     arln::CommandBuffer m_cmd{}, m_gCmd;
     arln::Image m_cAtt, m_dAtt;
+    arln::Buffer m_drb, m_drbl;
+    arln::Pipeline m_drp, m_drpl;
     Editor m_ed;
     ThreadPool m_tp{ 2 };
 };
