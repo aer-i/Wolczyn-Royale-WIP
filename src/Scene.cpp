@@ -19,9 +19,7 @@ auto Scene::u() noexcept -> v0 {
     m_mls.back().rot.y = glm::radians(-cam.gYa() - 90.f);
 
     for (size_t i = 0; i < m_mls.size(); ++i) {
-        arln::f64 x[16];
-        m_mls[i].rb->getTransform().getOpenGLMatrix(x);
-        wds[i].mtx = glm::mat4(x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
+        wds[i].mtx = m_mls[i].gMtx();
         wds[i].mi = m_mls[i].mtID;
     }
 
@@ -50,7 +48,6 @@ auto Scene::pmd() noexcept -> v0
 //            }
 
     this->lMdl("plane", "red rubber");
-    m_mls.back().rb->setType(rp3d::BodyType::STATIC);
     this->lMdl("cyborg", "gold", {0, 5, -3});
 }
 

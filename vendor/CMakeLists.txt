@@ -2,7 +2,25 @@ add_subdirectory(ARLN)
 add_subdirectory(fast_obj)
 add_subdirectory(meshoptimizer)
 
-find_package(ReactPhysics3D REQUIRED)
+include(FetchContent)
 
-target_include_directories(${PROJECT_NAME} PUBLIC fast_obj stb)
-target_link_libraries(${PROJECT_NAME} PUBLIC ARLN meshoptimizer ReactPhysics3D::ReactPhysics3D)
+# JOLT DEFINES ----------------------------------
+set(DOUBLE_PRECISION OFF)
+set(GENERATE_DEBUG_SYMBOLS OFF)
+set(CROSS_PLATFORM_DETERMINISTIC OFF)
+set(INTERPROCEDURAL_OPTIMIZATION ON)
+set(FLOATING_POINT_EXCEPTIONS_ENABLED OFF)
+set(OBJECT_LAYER_BITS 16)
+# -----------------------------------------------
+FetchContent_Declare(
+    JoltPhysics
+    GIT_REPOSITORY "https://github.com/jrouwe/JoltPhysics"
+    GIT_TAG "v4.0.2"
+    SOURCE_SUBDIR "Build"
+)
+FetchContent_MakeAvailable(JoltPhysics)
+
+SET_INTERPROCEDURAL_OPTIMIZATION()
+
+target_include_directories(${PROJECT_NAME} PUBLIC fast_obj stb ${JoltPhysics_SOURCE_DIR}/..)
+target_link_libraries(${PROJECT_NAME} PUBLIC ARLN meshoptimizer Jolt)

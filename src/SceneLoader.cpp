@@ -17,14 +17,7 @@ SceneLoader::~SceneLoader() noexcept {
 auto SceneLoader::lMdl(std::string_view t_msh, std::string_view t_mtr, arln::vec3 const& t_pos,
                  arln::vec3 const& t_rot, arln::vec3 const& t_scl) noexcept -> v0 {
     auto* msh = &m_mhs[t_msh.data()];
-    m_mls.emplace_back(msh, 0, m_mts[t_mtr.data()], t_pos, t_rot, t_scl, m_phx.cRB(rp3d::Transform{{t_pos.x, t_pos.y, t_pos.z}, rp3d::Quaternion::identity()}));
-    if (t_pos != glm::vec3{})
-    {
-        m_mls.back().col = m_mls.back().rb->addCollider(Physics::cCcs(2, 3), m_mls.back().rb->getTransform());
-        m_mls.back().rb->setAngularLockAxisFactor({0, 1, 0});
-    }
-    else
-        m_mls.back().col = m_mls.back().rb->addCollider(Physics::cBcs({10, 0.1f, 10}), m_mls.back().rb->getTransform());
+    m_mls.emplace_back(msh, 0, m_mts[t_mtr.data()], t_pos, t_rot, t_scl);
 }
 
 auto SceneLoader::lMhs(std::string_view t_n, std::string_view t_fp) noexcept -> v0 {

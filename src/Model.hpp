@@ -1,6 +1,5 @@
 #pragma once
 #include <Arln.hpp>
-#include <reactphysics3d/reactphysics3d.h>
 
 struct Vertex
 {
@@ -27,8 +26,6 @@ struct Model
     arln::vec3 pos{};
     arln::vec3 rot{};
     arln::vec3 scl{1.f};
-    rp3d::RigidBody* rb{ nullptr };
-    rp3d::Collider* col{ nullptr };
 
     [[nodiscard]] inline auto gMtx() const noexcept -> arln::mat4 {
         return glm::translate(arln::mat4{1.f}, pos) * glm::eulerAngleXYX(rot.x, rot.y, rot.z) * glm::scale(arln::mat4{1.f}, scl);

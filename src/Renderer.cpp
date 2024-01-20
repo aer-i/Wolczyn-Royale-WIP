@@ -60,39 +60,6 @@ auto Renderer::drF(Scene& t_rnS) noexcept -> v0 {
     m_ctx.beginFrame();
     m_tp.enq([&]
     {
-        if (t_rnS.m_phx.gdr()->getNbTriangles())
-        {
-            auto bS = t_rnS.m_phx.gdr()->getNbTriangles() * 3 * sizeof(Drd);
-            if (m_drb.getSize() < bS)
-                m_drb.recreate(arln::BufferUsageBits::eVertexBuffer, arln::MemoryType::eCpuToGpu, bS);
-            std::vector<Drd> dvb;
-            dvb.reserve(t_rnS.m_phx.gdr()->getNbTriangles() * 3);
-
-            for (auto& t : t_rnS.m_phx.gdr()->getTriangles())
-            {
-                dvb.emplace_back(glm::vec3{t.point1.x, t.point1.y, t.point1.z}, t.color1);
-                dvb.emplace_back(glm::vec3{t.point2.x, t.point2.y, t.point2.z}, t.color2);
-                dvb.emplace_back(glm::vec3{t.point3.x, t.point3.y, t.point3.z}, t.color3);
-            }
-            m_drb.writeData(dvb.data(), bS);
-        }
-
-        if (t_rnS.m_phx.gdr()->getNbLines())
-        {
-            auto bS = t_rnS.m_phx.gdr()->getNbLines() * 2 * sizeof(Drd);
-            if (m_drbl.getSize() < bS)
-                m_drbl.recreate(arln::BufferUsageBits::eVertexBuffer, arln::MemoryType::eCpuToGpu, bS);
-            std::vector<Drd> dvb;
-            dvb.reserve(t_rnS.m_phx.gdr()->getNbLines() * 2);
-
-            for (auto& t : t_rnS.m_phx.gdr()->getLines())
-            {
-                dvb.emplace_back(glm::vec3{t.point1.x, t.point1.y, t.point1.z}, t.color1);
-                dvb.emplace_back(glm::vec3{t.point2.x, t.point2.y, t.point2.z}, t.color2);
-            }
-            m_drbl.writeData(dvb.data(), bS);
-        }
-
         auto cAtt = arln::ColorAttachmentInfo {
             .clearColor = { .5f, .5f, .75f, 1.f },
             .image = m_ctx.getPresentImage()
@@ -126,19 +93,6 @@ auto Renderer::drF(Scene& t_rnS) noexcept -> v0 {
         m_cmd.bindDescriptorGraphics(t_rnS.m_gp, t_rnS.m_ds);
         m_cmd.bindIndexBuffer32(t_rnS.m_ib);
         m_cmd.drawIndexedIndirect(t_rnS.m_idb, 0, t_rnS.m_dc, sizeof(arln::DrawIndexedIndirectCommand));
-        if (t_rnS.m_phx.gdr()->getNbTriangles()) {
-            m_cmd.bindGraphicsPipeline(m_drp);
-            m_cmd.pushConstant(m_drp, arln::ShaderStageBits::eVertex, sizeof(arln::mat4) * 2, pc);
-            m_cmd.bindVertexBuffer(m_drb);
-            m_cmd.draw(t_rnS.m_phx.gdr()->getNbTriangles() * 3);
-        }
-        if (t_rnS.m_phx.gdr()->getNbLines())
-        {
-            m_cmd.bindGraphicsPipeline(m_drpl);
-            m_cmd.pushConstant(m_drpl, arln::ShaderStageBits::eVertex, sizeof(arln::mat4) * 2, pc);
-            m_cmd.bindVertexBuffer(m_drbl);
-            m_cmd.draw(t_rnS.m_phx.gdr()->getNbLines() * 2);
-        }
         m_cmd.endRendering();
         m_cmd.transitionImages(arln::ImageTransitionInfo{
             .image = m_ctx.getPresentImage(),

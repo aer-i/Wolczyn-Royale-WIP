@@ -1,6 +1,14 @@
 cmake_minimum_required(VERSION 3.27)
 project(WR)
 
+if (MSVC)
+    if (USE_STATIC_MSVC_RUNTIME_LIBRARY)
+        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+    else()
+        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+    endif()
+endif ()
+
 add_subdirectory(src)
 add_subdirectory(vendor)
 
