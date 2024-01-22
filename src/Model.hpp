@@ -18,8 +18,7 @@ struct Mesh {
 
 struct Model
 {
-    Mesh* msh{ nullptr };
-    arln::u32 txID{};
+    std::vector<Mesh> mhs;
     arln::u32 mtID{};
     glm::vec3 pos{};
     glm::vec3 rot{};

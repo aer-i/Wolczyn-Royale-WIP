@@ -1,6 +1,14 @@
 #include "MeshImporter.hpp"
 
-auto MeshImporter::lFl(std::string_view t_fp) noexcept -> void
+auto MeshImporter::fBf() noexcept -> void
+{
+    m_vb.recreate(arln::BufferUsageBits::eStorageBuffer, arln::MemoryType::eGpuOnly, m_vts.size() * sizeof(m_vts[0]));
+    m_ib.recreate(arln::BufferUsageBits::eIndexBuffer, arln::MemoryType::eGpuOnly, m_ixs.size() * sizeof(m_ixs[0]));
+    m_vb.writeData(m_vts.data(), m_vb.getSize());
+    m_ib.writeData(m_ixs.data(), m_ib.getSize());
+}
+
+auto MeshImporter::lFl(std::string_view t_fp, std::vector<Mesh>& t_mhs) noexcept -> void
 {
     Assimp::Importer importer;
     const aiScene *scene = importer.ReadFile(t_fp.data(), aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals);
@@ -10,20 +18,20 @@ auto MeshImporter::lFl(std::string_view t_fp) noexcept -> void
         std::this_thread::sleep_for(std::chrono::milliseconds(250));
     }
 
-    this->pN(scene->mRootNode, scene);
+    this->pN(scene->mRootNode, scene, t_mhs);
 }
 
-auto MeshImporter::pN(aiNode* t_n, aiScene const* t_s) noexcept -> v0
+auto MeshImporter::pN(aiNode* t_n, aiScene const* t_s, std::vector<Mesh>& t_mhs) noexcept -> v0
 {
     for (unsigned int i = 0; i < t_n->mNumMeshes; i++)
     {
         aiMesh* mesh = t_s->mMeshes[t_n->mMeshes[i]];
-        m_mhs.emplace_back(this->pM(mesh, t_s));
+        t_mhs.emplace_back(this->pM(mesh, t_s));
     }
 
     for (unsigned int i = 0; i < t_n->mNumChildren; i++)
     {
-        this->pN(t_n->mChildren[i], t_s);
+        this->pN(t_n->mChildren[i], t_s, t_mhs);
     }
 }
 
@@ -62,7 +70,7 @@ auto MeshImporter::pM(aiMesh* t_m, const aiScene* t_s) noexcept -> Mesh
     glm::vec3 ctr{};
     arln::f32 rad{};
 
-    for (auto& v : vxv){
+    for (auto& v : vxv) {
         ctr += glm::vec3(v.vx, v.vy, v.vz);
     }
     ctr /= arln::f32(ic);

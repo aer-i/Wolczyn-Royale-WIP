@@ -28,11 +28,10 @@ Engine::Engine() noexcept
             .applicationName = g_t, .engineName = g_t,
             .presentMode = arln::PresentMode::eNoSync
         }
-    }, m_rn{ m_wn, m_cx }
+    }, m_rn{ m_wn }
 { m_ss.emplace_back(m_wn);}
 
 auto Engine::exe() noexcept -> v0 {
-    m_ss[g_cs].pms();
     m_ss[g_cs].pmd();
     m_ss[g_cs].pr();
 

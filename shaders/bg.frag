@@ -12,12 +12,14 @@ struct Material
     float shininess;
 };
 
-layout(set = 0, binding = 2) readonly buffer MaterialBuffer
-{
-    Material materials[];
-};
+// To rework
+//layout(set = 0, binding = 2) readonly buffer MaterialBuffer
+//{
+//    Material materials[];
+//};
 
-layout(set = 0, binding = 3) uniform sampler2D samplers[];
+// To rework
+//layout(set = 0, binding = 3) uniform sampler2D samplers[];
 
 void main()
 {
@@ -26,5 +28,6 @@ void main()
 //    float m = 2.0 * length(r2);
 //    vec3 vN = r.xyz / m + 0.5;
 //    outColor = vec4(texture(samplers[materials[fragMaterialId].diffuseTexture], fragUV).rgb * vN, 1.0);
-    outColor = vec4(texture(samplers[materials[fragMaterialId].diffuseTexture], fragUV).rgb, 1.0);
+    //outColor = vec4(texture(samplers[materials[fragMaterialId].diffuseTexture], fragUV).rgb, 1.0);
+    outColor = vec4(fragNormal.xyz, 1.0);
 }

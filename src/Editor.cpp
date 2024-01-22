@@ -1,7 +1,7 @@
 #include "Editor.hpp"
 #include "Time.hpp"
 
-Editor::Editor(arln::Window& t_w, arln::Context& t_c) noexcept : m_wnd{ t_w }, m_ctx{ t_c } {
+Editor::Editor(arln::Window& t_w) noexcept : m_wnd{ t_w } {
     arln::ImguiContext::Init(t_w);
 }
 
@@ -15,7 +15,7 @@ auto Editor::e() noexcept -> v0 {
 
 auto Editor::r(arln::CommandBuffer& t_cmd) noexcept -> v0 {
     e(); auto colorAttachment = arln::ColorAttachmentInfo{
-        .image = m_ctx.getPresentImage(),
+        .image = arln::CurrentContext()->getPresentImage(),
         .late = true
     }; //t_cmd.begin();
 //    t_cmd.transitionImages({arln::ImageTransitionInfo{
@@ -29,7 +29,7 @@ auto Editor::r(arln::CommandBuffer& t_cmd) noexcept -> v0 {
     });
     arln::ImguiContext::Render(t_cmd);
     t_cmd.endRendering(); t_cmd.transitionImages(arln::ImageTransitionInfo{
-        .image = m_ctx.getPresentImage(),
+        .image = arln::CurrentContext()->getPresentImage(),
         .oldLayout = arln::ImageLayout::eColorAttachment, .newLayout = arln::ImageLayout::ePresentSrc,
         .srcStageMask = arln::PipelineStageBits::eColorAttachmentOutput, .dstStageMask = arln::PipelineStageBits::eColorAttachmentOutput,
         .srcAccessMask = arln::AccessBits::eColorAttachmentWrite, .dstAccessMask = arln::AccessBits::eNone
