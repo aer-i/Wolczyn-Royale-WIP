@@ -9,12 +9,10 @@ struct Vertex
 };
 
 struct Mesh {
-    explicit Mesh(std::string_view t_fp, std::vector<Vertex>& t_vb, std::vector<arln::u32>& t_ib) noexcept;
-    Mesh() = default;
     arln::u32 ic{};
     arln::i32 vxo{};
     arln::u32 ixo{};
-    arln::vec3 ctr{};
+    glm::vec3 ctr{};
     arln::f32 rad{};
 };
 
@@ -23,12 +21,12 @@ struct Model
     Mesh* msh{ nullptr };
     arln::u32 txID{};
     arln::u32 mtID{};
-    arln::vec3 pos{};
-    arln::vec3 rot{};
-    arln::vec3 scl{1.f};
+    glm::vec3 pos{};
+    glm::vec3 rot{};
+    glm::vec3 scl{1.f};
 
-    [[nodiscard]] inline auto gMtx() const noexcept -> arln::mat4 {
-        return glm::translate(arln::mat4{1.f}, pos) * glm::eulerAngleXYX(rot.x, rot.y, rot.z) * glm::scale(arln::mat4{1.f}, scl);
+    [[nodiscard]] inline auto gMtx() const noexcept -> glm::mat4 {
+        return glm::translate(glm::mat4{1.f}, pos) * glm::eulerAngleXYX(rot.x, rot.y, rot.z) * glm::scale(glm::mat4{1.f}, scl);
     }
 };
 

@@ -4,8 +4,8 @@
 
 class Sky
 {   using v0 = void; struct PC{
-        arln::vec2 mps;
-        arln::vec2 res;
+        glm::vec2 mps;
+        glm::vec2 res;
     };
 public:
     Sky() noexcept;

@@ -23,7 +23,7 @@ auto Sky::r(arln::CommandBuffer& t_cmd, Camera& t_cm) noexcept -> v0
 {
     auto e = arln::CurrentContext()->getCurrentExtent();
     auto p = PC{
-        .mps = { arln::toRadians(t_cm.gPi()), arln::toRadians(t_cm.gYa()) },
+        .mps = { glm::radians(t_cm.gPi()), glm::radians(t_cm.gYa()) },
         .res = e
     };
 

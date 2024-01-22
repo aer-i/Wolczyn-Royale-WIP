@@ -1,22 +1,24 @@
 #include "Scene.hpp"
+#include "Time.hpp"
 
 struct WD {
-    arln::mat4 mtx;
+    glm::mat4 mtx;
     alignas(16) arln::u32 mi;
 };
 
-static inline auto nP(arln::vec4 p) noexcept -> arln::vec4 {
-    return p / length(arln::vec3(p));
+static inline auto nP(glm::vec4 p) noexcept -> glm::vec4 {
+    return p / length(glm::vec3(p));
 }
 
 auto Scene::u() noexcept -> v0 {
-    cam.sP(arln::toRadians(70), arln::f32(arln::CurrentContext()->getCurrentExtent().x) / arln::f32(arln::CurrentContext()->getCurrentExtent().y), 0.1f, 1024.f);
+    cam.sP(glm::radians(70.f), arln::f32(arln::CurrentContext()->getCurrentExtent().x) / arln::f32(arln::CurrentContext()->getCurrentExtent().y), 0.1f, 1024.f);
     cam.u();
     m_phx.u();
 
     std::vector<WD> wds(m_mls.size());
 
-    m_mls.back().rot.y = glm::radians(-cam.gYa() - 90.f);
+    m_mls.back().rot.y = static_cast<arln::f32>(Time::gT());
+    m_mls.back().pos.y = cosf(static_cast<arln::f32>(Time::gT()) * 2.f) * 2.f + 2.f;
 
     for (size_t i = 0; i < m_mls.size(); ++i) {
         wds[i].mtx = m_mls[i].gMtx();
@@ -28,27 +30,8 @@ auto Scene::u() noexcept -> v0 {
 
 auto Scene::pmd() noexcept -> v0
 {
-//    for (arln::i32 x = 15; x--; )
-//        for (arln::i32 y = 15; y--; )
-//            for (arln::i32 z = 15; z--; ) {
-//                switch (x % 4) {
-//                case 3:
-//                    this->lMdl("ico", "gold", {-x * 3, -y * 3, -z * 3});
-//                    break;
-//                case 2:
-//                    this->lMdl("zuzanna", "turquoise", {-x * 3, -y * 3, -z * 3});
-//                    break;
-//                case 1:
-//                    this->lMdl("ico", "red rubber", {-x * 3, -y * 3, -z * 3});
-//                    break;
-//                default:
-//                    this->lMdl("cube", "cyan rubber", {-x * 3, -y * 3, -z * 3});
-//                    break;
-//                }
-//            }
-
-    this->lMdl("plane", "red rubber");
-    this->lMdl("cyborg", "gold", {0, 5, -3});
+    this->lMdl(0, "red rubber");
+    this->lMdl(1, "gold", {0, 5, -3});
 }
 
 auto Scene::pms() noexcept -> v0
@@ -61,12 +44,12 @@ auto Scene::pms() noexcept -> v0
     this->lMtr("red rubber", "grass" , 0.078125f * 128.f);
     this->lMtr("turquoise" , "grass", 0.1 * 128.f);
 
-    this->lMhs("cube", "../../assets/cube.obj");
-    this->lMhs("ico", "../../assets/ico.obj");
-    this->lMhs("kitten", "../../assets/kitten.obj");
-    this->lMhs("zuzanna", "../../assets/zuzanna.obj");
-    this->lMhs("plane", "../../assets/plane.obj");
-    this->lMhs("cyborg", "../../assets/cyborg.obj");
+//    this->lMhs("cube", "../../assets/cube.obj");
+//    this->lMhs("ico", "../../assets/ico.obj");
+//    this->lMhs("kitten", "../../assets/kitten.obj");
+//    this->lMhs("zuzanna", "../../assets/zuzanna.obj");
+    this->lMhs("../../assets/plane.obj");
+    this->lMhs("../../assets/cyborg.obj");
 }
 
 auto Scene::pr() noexcept -> v0
@@ -104,13 +87,13 @@ auto Scene::pr() noexcept -> v0
         .vertShaderPath = "shaders/bg.vert.spv", .fragShaderPath = "shaders/bg.frag.spv",
         .depthFormat = arln::CurrentContext()->getDefaultDepthFormat(), .frontFace = arln::FrontFace::eCounterClockwise,
         .cullMode = arln::CullMode::eFront, .depthStencil = true
-    }; pi.pushConstants << arln::PushConstantRange(arln::ShaderStageBits::eVertex, sizeof(arln::mat4) * 2, 0);
+    }; pi.pushConstants << arln::PushConstantRange(arln::ShaderStageBits::eVertex, sizeof(glm::mat4) * 2, 0);
     pi.descriptors << m_dp.getFirstDescriptor();
     m_gp = arln::CurrentContext()->createGraphicsPipeline(pi);
-    m_vb.recreate(arln::BufferUsageBits::eStorageBuffer, arln::MemoryType::eGpuOnly, m_vv.size() * sizeof(m_vv[0]));
-    m_ib.recreate(arln::BufferUsageBits::eIndexBuffer, arln::MemoryType::eGpuOnly, m_iv.size() * sizeof(m_iv[0]));
-    m_vb.writeData(m_vv.data(), m_vb.getSize());
-    m_ib.writeData(m_iv.data(), m_ib.getSize());
+    m_vb.recreate(arln::BufferUsageBits::eStorageBuffer, arln::MemoryType::eGpuOnly, m_mshImp.m_vts.size() * sizeof(m_mshImp.m_vts[0]));
+    m_ib.recreate(arln::BufferUsageBits::eIndexBuffer, arln::MemoryType::eGpuOnly, m_mshImp.m_ixs.size() * sizeof(m_mshImp.m_ixs[0]));
+    m_vb.writeData(m_mshImp.m_vts.data(), m_vb.getSize());
+    m_ib.writeData(m_mshImp.m_ixs.data(), m_ib.getSize());
 
     auto dw = arln::DescriptorWriter();
     dw.addBuffer(m_ds, m_vb, 0, arln::DescriptorType::eStorageBuffer)

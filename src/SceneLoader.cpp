@@ -14,14 +14,15 @@ SceneLoader::~SceneLoader() noexcept {
     m_sm.destroy();
 }
 
-auto SceneLoader::lMdl(std::string_view t_msh, std::string_view t_mtr, arln::vec3 const& t_pos,
-                 arln::vec3 const& t_rot, arln::vec3 const& t_scl) noexcept -> v0 {
-    auto* msh = &m_mhs[t_msh.data()];
+auto SceneLoader::lMdl(arln::u32 t_msh, std::string_view t_mtr, glm::vec3 const& t_pos,
+                       glm::vec3 const& t_rot, glm::vec3 const& t_scl) noexcept -> v0 {
+    auto* msh = &m_mhs[t_msh];
     m_mls.emplace_back(msh, 0, m_mts[t_mtr.data()], t_pos, t_rot, t_scl);
 }
 
-auto SceneLoader::lMhs(std::string_view t_n, std::string_view t_fp) noexcept -> v0 {
-    m_mhs[t_n.data()] = Mesh(t_fp, m_vv, m_iv);
+auto SceneLoader::lMhs(std::string_view t_fp) noexcept -> v0 {
+    //m_mhs.emplace_back(t_fp, m_vv, m_iv);
+    m_mshImp.lFl(t_fp);
 }
 
 auto SceneLoader::lMtr(std::string_view t_n, std::string_view t_tx, arln::f32 t_shn) noexcept -> v0 {

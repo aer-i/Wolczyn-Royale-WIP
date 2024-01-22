@@ -17,14 +17,17 @@ auto Editor::r(arln::CommandBuffer& t_cmd) noexcept -> v0 {
     e(); auto colorAttachment = arln::ColorAttachmentInfo{
         .image = m_ctx.getPresentImage(),
         .late = true
-    }; t_cmd.begin(); t_cmd.transitionImages({arln::ImageTransitionInfo{
-        .image = m_ctx.getPresentImage(),
-        .oldLayout = arln::ImageLayout::eUndefined, .newLayout = arln::ImageLayout::eColorAttachment,
-        .srcStageMask = arln::PipelineStageBits::eColorAttachmentOutput, .dstStageMask = arln::PipelineStageBits::eColorAttachmentOutput,
-        .srcAccessMask = arln::AccessBits::eNone, .dstAccessMask = arln::AccessBits::eColorAttachmentWrite
-    }}); t_cmd.beginRendering(arln::RenderingInfo{
+    }; //t_cmd.begin();
+//    t_cmd.transitionImages({arln::ImageTransitionInfo{
+//        .image = m_ctx.getPresentImage(),
+//        .oldLayout = arln::ImageLayout::eUndefined, .newLayout = arln::ImageLayout::eColorAttachment,
+//        .srcStageMask = arln::PipelineStageBits::eColorAttachmentOutput, .dstStageMask = arln::PipelineStageBits::eColorAttachmentOutput,
+//        .srcAccessMask = arln::AccessBits::eNone, .dstAccessMask = arln::AccessBits::eColorAttachmentWrite
+//    }});
+    t_cmd.beginRendering(arln::RenderingInfo{
         .pColorAttachment = &colorAttachment
-    }); arln::ImguiContext::Render(t_cmd);
+    });
+    arln::ImguiContext::Render(t_cmd);
     t_cmd.endRendering(); t_cmd.transitionImages(arln::ImageTransitionInfo{
         .image = m_ctx.getPresentImage(),
         .oldLayout = arln::ImageLayout::eColorAttachment, .newLayout = arln::ImageLayout::ePresentSrc,

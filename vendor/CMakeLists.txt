@@ -1,6 +1,6 @@
 add_subdirectory(ARLN)
-add_subdirectory(fast_obj)
 add_subdirectory(meshoptimizer)
+add_subdirectory(assimp)
 
 include(FetchContent)
 
@@ -22,5 +22,5 @@ FetchContent_MakeAvailable(JoltPhysics)
 
 SET_INTERPROCEDURAL_OPTIMIZATION()
 
-target_include_directories(${PROJECT_NAME} PUBLIC fast_obj stb ${JoltPhysics_SOURCE_DIR}/..)
-target_link_libraries(${PROJECT_NAME} PUBLIC ARLN meshoptimizer Jolt)
+target_include_directories(${PROJECT_NAME} PUBLIC stb fast_obj ${JoltPhysics_SOURCE_DIR}/..)
+target_link_libraries(${PROJECT_NAME} PUBLIC ARLN meshoptimizer Jolt assimp)

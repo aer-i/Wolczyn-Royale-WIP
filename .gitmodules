@@ -1,9 +1,9 @@
 [submodule "vendor/ARLN"]
 	path = vendor/ARLN
 	url = https://github.com/aer-i/ARLN.git
-[submodule "vendor/fast_obj"]
-	path = vendor/fast_obj
-	url = https://github.com/thisistherk/fast_obj.git
 [submodule "vendor/meshoptimizer"]
 	path = vendor/meshoptimizer
 	url = https://github.com/zeux/meshoptimizer.git
+[submodule "vendor/assimp"]
+	path = vendor/assimp
+	url = https://github.com/assimp/assimp.git

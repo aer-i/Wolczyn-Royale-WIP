@@ -54,11 +54,7 @@ Renderer::Renderer(arln::Window& t_w, arln::Context& t_c) noexcept : m_wnd{ t_w 
 }
 
 auto Renderer::drF(Scene& t_rnS) noexcept -> v0 {
-    static arln::f64 fcv = 0;
-    auto fcb = Time::gT() * 1000;
-
     m_ctx.beginFrame();
-    m_tp.enq([&]
     {
         auto cAtt = arln::ColorAttachmentInfo {
             .clearColor = { .5f, .5f, .75f, 1.f },
@@ -82,57 +78,30 @@ auto Renderer::drF(Scene& t_rnS) noexcept -> v0 {
         m_cmd.beginRendering(arln::RenderingInfo{
             .pColorAttachment = &cAtt, .pDepthAttachment = &dAtt
         });
-        t_rnS.m_sky.r(m_cmd, t_rnS.cam);
-        arln::mat4 pc[2] = {
+        //t_rnS.m_sky.r(m_cmd, t_rnS.cam);
+        glm::mat4 pc[2] = {
             t_rnS.cam.gP(),
             t_rnS.cam.gV()
         }; m_cmd.bindGraphicsPipeline(t_rnS.m_gp);
         m_cmd.setScissor(0, 0, m_wnd.getWidth(), m_wnd.getHeight());
         m_cmd.setViewport(0, (arln::f32)m_wnd.getHeight(), (arln::f32)m_wnd.getWidth(), -(arln::f32)m_wnd.getHeight());
-        m_cmd.pushConstant(t_rnS.m_gp, arln::ShaderStageBits::eVertex, sizeof(arln::mat4) * 2, pc);
+        m_cmd.pushConstant(t_rnS.m_gp, arln::ShaderStageBits::eVertex, sizeof(glm::mat4) * 2, pc);
         m_cmd.bindDescriptorGraphics(t_rnS.m_gp, t_rnS.m_ds);
         m_cmd.bindIndexBuffer32(t_rnS.m_ib);
         m_cmd.drawIndexedIndirect(t_rnS.m_idb, 0, t_rnS.m_dc, sizeof(arln::DrawIndexedIndirectCommand));
         m_cmd.endRendering();
-        m_cmd.transitionImages(arln::ImageTransitionInfo{
-            .image = m_ctx.getPresentImage(),
-            .oldLayout = arln::ImageLayout::eColorAttachment, .newLayout = arln::ImageLayout::ePresentSrc,
-            .srcStageMask = arln::PipelineStageBits::eColorAttachmentOutput, .dstStageMask = arln::PipelineStageBits::eColorAttachmentOutput,
-            .srcAccessMask = arln::AccessBits::eColorAttachmentWrite, .dstAccessMask = arln::AccessBits::eNone
-        });
-        m_cmd.end();
-    });
-
-    m_tp.enq([&]{
-        m_ed.r(m_gCmd);
-    });
-
-    m_tp.w();
-    m_ctx.endFrame({ m_cmd, m_gCmd });
-
-    arln::f64 fce = Time::gT() * 1000;
-    fcv = fcv * 0.95 + (fce - fcb) * 0.05;
-
-    auto const* v = ImGui::GetMainViewport();
-    ImVec2 wp;
-    wp.x = v->WorkPos.x + 10; wp.y = v->WorkPos.y + 10;
-    ImGui::SetNextWindowPos(wp, ImGuiCond_Always);
-    ImGui::SetNextWindowViewport(v->ID);
-    ImGui::SetNextWindowBgAlpha(0.35f);
-    if (ImGui::Begin("f", nullptr,
-        ImGuiWindowFlags_NoDecoration |
-        ImGuiWindowFlags_NoDocking |
-        ImGuiWindowFlags_AlwaysAutoResize |
-        ImGuiWindowFlags_NoSavedSettings |
-        ImGuiWindowFlags_NoFocusOnAppearing |
-        ImGuiWindowFlags_NoNav |
-        ImGuiWindowFlags_NoMove
-    ))
-    {
-        ImGui::Text("Fps overlay\nfps: %u", Time::gFr());
-        ImGui::Text("Avg cpu time: %.2f", fcv);
+//        m_cmd.transitionImages(arln::ImageTransitionInfo{
+//            .image = m_ctx.getPresentImage(),
+//            .oldLayout = arln::ImageLayout::eColorAttachment, .newLayout = arln::ImageLayout::ePresentSrc,
+//            .srcStageMask = arln::PipelineStageBits::eColorAttachmentOutput, .dstStageMask = arln::PipelineStageBits::eColorAttachmentOutput,
+//            .srcAccessMask = arln::AccessBits::eColorAttachmentWrite, .dstAccessMask = arln::AccessBits::eNone
+//        });
+        //m_cmd.end();
     }
-    ImGui::End();
+
+    m_ed.r(m_cmd);
+
+    m_ctx.endFrame({ m_cmd });
 }
 
 Renderer::~Renderer() noexcept {

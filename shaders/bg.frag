@@ -21,9 +21,10 @@ layout(set = 0, binding = 3) uniform sampler2D samplers[];
 
 void main()
 {
-    vec3 r = fragNormal;
-    vec3 r2 = vec3(r.x, r.y, r.z + 1.0);
-    float m = 2.0 * length(r2);
-    vec3 vN = r.xyz / m + 0.5;
-    outColor = vec4(texture(samplers[materials[fragMaterialId].diffuseTexture], fragUV).rgb * vN, 1.0);
+//    vec3 r = fragNormal;
+//    vec3 r2 = vec3(r.x, r.y, r.z + 1.0);
+//    float m = 2.0 * length(r2);
+//    vec3 vN = r.xyz / m + 0.5;
+//    outColor = vec4(texture(samplers[materials[fragMaterialId].diffuseTexture], fragUV).rgb * vN, 1.0);
+    outColor = vec4(texture(samplers[materials[fragMaterialId].diffuseTexture], fragUV).rgb, 1.0);
 }

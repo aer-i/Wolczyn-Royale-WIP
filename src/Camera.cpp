@@ -43,7 +43,7 @@ auto Camera::u() noexcept -> v0 {
         sp += 5.f;
     }
 
-    if (vel != arln::vec3{0.f}) {
+    if (vel != glm::vec3{0.f}) {
         m_ps += normalize(vel) * dt * sp;
     }
 
@@ -72,7 +72,7 @@ auto Camera::sP(arln::f32 t_f, arln::f32 t_ar, arln::f32 t_ne, arln::f32 t_fa) n
     m_pr[3][2] = -(t_fa * t_ne) / (t_fa - t_ne);
 }
 
-auto Camera::sV(const arln::vec3& t_di) noexcept -> v0 {
+auto Camera::sV(const glm::vec3& t_di) noexcept -> v0 {
     auto const w{ normalize(t_di) },
                u{ normalize(cross(w, { 0.f, 1.f, 0.f })) },
                v{ cross(u, w) };

@@ -3,18 +3,19 @@
 #include "Model.hpp"
 #include "Sky.hpp"
 #include "Physics.hpp"
+#include "MeshImporter.hpp"
 #include <unordered_map>
 
 struct SceneLoader {
 protected:
     using v0 = void;
 public:
-    SceneLoader() noexcept {}
+    SceneLoader() = default;
     ~SceneLoader() noexcept;
 protected:
-    auto lMdl(std::string_view t_msh, std::string_view t_mtr, arln::vec3 const& t_pos = {},
-              arln::vec3 const& t_rot = {}, arln::vec3 const& t_scl = arln::vec3{1.f}) noexcept -> v0;
-    auto lMhs(std::string_view t_n, std::string_view t_fp) noexcept -> v0;
+    auto lMdl(arln::u32 t_msh, std::string_view t_mtr, glm::vec3 const& t_pos = {},
+              glm::vec3 const& t_rot = {}, glm::vec3 const& t_scl = glm::vec3{1.f}) noexcept -> v0;
+    auto lMhs(std::string_view t_fp) noexcept -> v0;
     auto lMtr(std::string_view t_n, std::string_view t_tx, arln::f32 t_shn) noexcept -> v0;
     auto lTxt(std::string_view t_n, std::string_view t_fp) noexcept -> v0;
     auto gIdb() noexcept -> v0;
@@ -30,9 +31,8 @@ public:
     std::vector<Model> m_mls;
     std::vector<Material> m_mtHls;
     std::vector<arln::Image> m_txHls;
-    std::unordered_map<std::string, Mesh> m_mhs;
+    std::vector<Mesh> m_mhs;
     std::unordered_map<std::string, arln::u32> m_mts;
     std::unordered_map<std::string, arln::u32> m_txs;
-    std::vector<Vertex> m_vv;
-    std::vector<arln::u32> m_iv;
+    MeshImporter m_mshImp{ m_mhs };
 };
