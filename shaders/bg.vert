@@ -32,5 +32,5 @@ void main()
     fragNormal = normal;
     fragUV = vec2(vertices[gl_VertexIndex].u, vertices[gl_VertexIndex].v);
     fragMaterialId = objects[gl_InstanceIndex].materialIndex;
-    gl_Position = pc.projection * pc.view * objects[gl_InstanceIndex].model * vec4(position, 1);
+    gl_Position = pc.projection * pc.view * objects[0].model * vec4(position, 1);
 }

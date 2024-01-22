@@ -57,12 +57,12 @@ auto SceneLoader::gIdb() noexcept -> v0 {
     std::vector<arln::DrawIndexedIndirectCommand> ic;
     ic.reserve(m_mls.size());
 
-    for (m_dc = 0; m_dc < m_mls.size(); ++m_dc) {
+    for (m_dc = 0; m_dc < m_mhs.size(); ++m_dc) {
         ic.emplace_back(arln::DrawIndexedIndirectCommand{
-            .indexCount = m_mls[m_dc].msh->ic,
+            .indexCount = m_mhs[m_dc].ic,
             .instanceCount = 1,
-            .firstIndex = m_mls[m_dc].msh->ixo,
-            .vertexOffset = m_mls[m_dc].msh->vxo,
+            .firstIndex = m_mhs[m_dc].ixo,
+            .vertexOffset = m_mhs[m_dc].vxo,
             .firstInstance = m_dc
         });
     }

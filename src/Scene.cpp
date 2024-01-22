@@ -17,8 +17,8 @@ auto Scene::u() noexcept -> v0 {
 
     std::vector<WD> wds(m_mls.size());
 
-    m_mls.back().rot.y = static_cast<arln::f32>(Time::gT());
-    m_mls.back().pos.y = cosf(static_cast<arln::f32>(Time::gT()) * 2.f) * 2.f + 2.f;
+    //m_mls.back().rot.y = static_cast<arln::f32>(Time::gT());
+    //m_mls.back().pos.y = cosf(static_cast<arln::f32>(Time::gT()) * 2.f) * 2.f + 2.f;
 
     for (size_t i = 0; i < m_mls.size(); ++i) {
         wds[i].mtx = m_mls[i].gMtx();
@@ -30,8 +30,8 @@ auto Scene::u() noexcept -> v0 {
 
 auto Scene::pmd() noexcept -> v0
 {
-    this->lMdl(0, "red rubber");
-    this->lMdl(1, "gold", {0, 5, -3});
+    this->lMdl(0, "red rubber", {}, {}, glm::vec3{0.01f});
+    //this->lMdl(1, "gold", {0, 5, -3});
 }
 
 auto Scene::pms() noexcept -> v0
@@ -44,12 +44,14 @@ auto Scene::pms() noexcept -> v0
     this->lMtr("red rubber", "grass" , 0.078125f * 128.f);
     this->lMtr("turquoise" , "grass", 0.1 * 128.f);
 
-//    this->lMhs("cube", "../../assets/cube.obj");
-//    this->lMhs("ico", "../../assets/ico.obj");
-//    this->lMhs("kitten", "../../assets/kitten.obj");
-//    this->lMhs("zuzanna", "../../assets/zuzanna.obj");
-    this->lMhs("../../assets/plane.obj");
-    this->lMhs("../../assets/cyborg.obj");
+    this->lMhs("../../assets/sponza.glb");
+//    this->lMhs("../../assets/backpack/backpack.obj");
+//    this->lMhs("../../assets/plane.obj");
+//    this->lMhs("../../assets/cyborg.obj");
+//    this->lMhs("../../assets/cube.obj");
+//    this->lMhs("../../assets/ico.obj");
+//    this->lMhs("../../assets/kitten.obj");
+//    this->lMhs("../../assets/zuzanna.obj");
 }
 
 auto Scene::pr() noexcept -> v0
