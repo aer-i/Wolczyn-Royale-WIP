@@ -10,9 +10,11 @@ Renderer::Renderer(arln::Window& t_w) noexcept : m_wnd{ t_w },
     m_ed{ t_w } {
     m_cmd = arln::CurrentContext()->allocateCommandBuffer();
     m_gCmd = arln::CurrentContext()->allocateCommandBuffer();
+    auto vs = arln::Shader("shaders/dr.vert.spv");
+    auto fs = arln::Shader("shaders/dr.frag.spv");
     arln::GraphicsPipelineInfo drpI{};
-    drpI.vertShaderPath = "shaders/dr.vert.spv";
-    drpI.fragShaderPath = "shaders/dr.frag.spv";
+    drpI.vertShader = vs;
+    drpI.fragShader = fs;
     drpI.pushConstants << arln::PushConstantRange(arln::ShaderStageBits::eVertex, sizeof(glm::mat4) * 2, 0);
     drpI.bindings << arln::BindingDescription(0, sizeof(Drd), arln::VertexInputRate::eVertex);
     drpI.attributes << arln::AttributeDescription(0, 0, arln::Format::eR32G32B32Sfloat, offsetof(Drd, pos))
@@ -25,6 +27,8 @@ Renderer::Renderer(arln::Window& t_w) noexcept : m_wnd{ t_w },
     drpI.topology = arln::Topology::eLineList;
     drpI.polygonMode = arln::PolygonMode::eFill;
     m_drpl = arln::CurrentContext()->createGraphicsPipeline(drpI);
+    fs.destroy();
+    vs.destroy();
     m_cAtt.recreate(
         arln::CurrentContext()->getCurrentExtent().x,
         arln::CurrentContext()->getCurrentExtent().y,

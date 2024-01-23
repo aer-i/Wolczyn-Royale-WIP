@@ -2,9 +2,11 @@
 
 Sky::Sky() noexcept
 {
+    auto vs = arln::Shader("shaders/sky.vert.spv");
+    auto fs = arln::Shader("shaders/sky.frag.spv");
     auto pi = arln::GraphicsPipelineInfo{
-        .vertShaderPath = "shaders/sky.vert.spv",
-        .fragShaderPath = "shaders/sky.frag.spv",
+        .vertShader = vs,
+        .fragShader = fs,
         .cullMode = arln::CullMode::eNone,
         .topology = arln::Topology::eTriangleFan
     };
@@ -12,6 +14,8 @@ Sky::Sky() noexcept
     pi.pushConstants << arln::PushConstantRange(arln::ShaderStageBits::eFragment, sizeof(PC), 0);
 
     m_p = arln::CurrentContext()->createGraphicsPipeline(pi);
+    vs.destroy();
+    fs.destroy();
 }
 
 Sky::~Sky() noexcept

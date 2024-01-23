@@ -41,13 +41,17 @@ auto Scene::pr() noexcept -> v0
     m_ob.recreate(arln::BufferUsageBits::eStorageBuffer, arln::MemoryType::eGpuOnly, sizeof(WD) * wds.size());
     m_ob.writeData(wds.data(), m_ob.getSize());
 
+    auto vs = arln::Shader("shaders/bg.vert.spv");
+    auto fs = arln::Shader("shaders/bg.frag.spv");
     auto pi = arln::GraphicsPipelineInfo{
-        .vertShaderPath = "shaders/bg.vert.spv", .fragShaderPath = "shaders/bg.frag.spv",
+        .vertShader = vs, .fragShader = fs,
         .depthFormat = arln::CurrentContext()->getDefaultDepthFormat(), .frontFace = arln::FrontFace::eCounterClockwise,
         .cullMode = arln::CullMode::eFront, .depthStencil = true
     }; pi.pushConstants << arln::PushConstantRange(arln::ShaderStageBits::eVertex, sizeof(glm::mat4) * 2, 0);
     pi.descriptors << m_dp.getFirstDescriptor();
     m_gp = arln::CurrentContext()->createGraphicsPipeline(pi);
+    fs.destroy();
+    vs.destroy();
     m_mshImp.fBf();
 
     arln::DescriptorWriter()

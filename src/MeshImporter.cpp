@@ -82,18 +82,21 @@ auto MeshImporter::oM(std::vector<Vertex>& t_vxv, std::vector<arln::u32>& t_ixv)
     meshopt_optimizeOverdraw(ix.data(), ix.data(), is, &vx[0].vx, ovc, sizeof(Vertex), 1.05f);
     meshopt_optimizeVertexFetch(vx.data(), ix.data(), is, vx.data(), ovc, sizeof(Vertex));
 
-    constexpr arln::f32 thr = 0.5f;
-    constexpr arln::f32 ter = 0.2f;
-    auto tix = static_cast<size_t>((arln::f32)is * thr);
-    std::vector<arln::u32> six(ix.size());
-    auto oic = meshopt_simplify(six.data(), ix.data(), is, &vx[0].vx, ovc, sizeof(Vertex), tix, ter);
-    six.resize(oic);
+    if constexpr (false)
+    {
+        constexpr arln::f32 thr = 0.5f;
+        constexpr arln::f32 ter = 0.2f;
+        auto tix = static_cast<size_t>((arln::f32) is * thr);
+        std::vector<arln::u32> six(ix.size());
+        auto oic = meshopt_simplify(six.data(), ix.data(), is, &vx[0].vx, ovc, sizeof(Vertex), tix, ter);
+        six.resize(oic);
+    }
 
-    auto ic = static_cast<arln::u32>(six.size());
+    auto ic = static_cast<arln::u32>(ix.size());
     auto vxo = static_cast<arln::i32>(m_vts.size());
     auto ixo = static_cast<arln::u32>(m_ixs.size());
     m_vts.insert(m_vts.end(), vx.begin(), vx.end());
-    m_ixs.insert(m_ixs.end(), six.begin(), six.end());
+    m_ixs.insert(m_ixs.end(), ix.begin(), ix.end());
 
     glm::vec3 ctr{};
     arln::f32 rad{};
