@@ -5,13 +5,6 @@ struct Vertex
     float u, v;
 };
 
-struct MeshDraw
-{
-    vec3 position;
-    float scale;
-    vec4 orientation;
-};
-
 struct ObjectData
 {
     mat4 model;

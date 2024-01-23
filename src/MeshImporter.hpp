@@ -10,7 +10,7 @@ class MeshImporter {
     using v0 = void;
 public:
     MeshImporter() = default;
-    inline ~MeshImporter() noexcept { m_vb.free(); m_ib.free(); }
+    inline ~MeshImporter() noexcept { m_vb.free(); m_ib.free(); for(auto& t : m_txs) t.free(); }
     auto fBf() noexcept -> v0;
     auto lFl(std::string_view t_fp, std::vector<Mesh>& t_mhs) noexcept -> v0;
 public:
@@ -19,9 +19,14 @@ public:
 private:
     auto pN(aiNode* t_n, aiScene const* t_s, std::vector<Mesh>& t_mhs) noexcept -> v0;
     auto pM(aiMesh* t_m, aiScene const* t_s) noexcept -> Mesh;
-    auto oM(std::vector<Vertex>& t_vxv, std::vector<arln::u32>& t_ixv) noexcept -> Mesh;
+    auto oM(std::vector<Vertex>& t_vxv, std::vector<arln::u32>& t_ixv, std::vector<Texture>& t_txs) noexcept -> Mesh;
+    auto lT(aiMaterial* t_mt, aiTextureType t_ty, std::string_view t_tn) noexcept -> std::vector<Texture>;
+    auto lI(std::string_view t_fp) noexcept -> arln::u32;
 public:
     arln::Buffer m_vb, m_ib;
+    std::string dir;
     std::vector<Vertex> m_vts;
     std::vector<arln::u32> m_ixs;
+    std::vector<arln::Image> m_txs;
+    std::vector<Texture> m_tLds;
 };

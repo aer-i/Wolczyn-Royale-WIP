@@ -8,18 +8,25 @@ struct Vertex
     arln::f32 u, v;
 };
 
+struct Texture
+{
+    arln::u32 id;
+    std::string ty;
+    std::string pt;
+};
+
 struct Mesh {
     arln::u32 ic{};
     arln::i32 vxo{};
     arln::u32 ixo{};
     glm::vec3 ctr{};
     arln::f32 rad{};
+    std::vector<Texture> txs;
 };
 
 struct Model
 {
     std::vector<Mesh> mhs;
-    arln::u32 mtID{};
     glm::vec3 pos{};
     glm::vec3 rot{};
     glm::vec3 scl{1.f};

@@ -5,12 +5,12 @@ SceneLoader::~SceneLoader() noexcept {
     m_idb.free();
     m_dp.destroy();
     m_gp.destroy();
+    m_smp.destroy();
 }
 
 auto SceneLoader::lMdl(std::string_view t_fp, glm::vec3 const& t_pos, glm::vec3 const& t_rot, glm::vec3 const& t_scl) noexcept -> v0 {
     auto& m = m_mls.emplace_back();
     m_mshImp.lFl(t_fp, m.mhs);
-    m.mtID = 0;
     m.pos = t_pos;
     m.rot = t_rot;
     m.scl = t_scl;

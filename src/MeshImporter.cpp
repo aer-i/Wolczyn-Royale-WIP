@@ -1,4 +1,7 @@
 #include "MeshImporter.hpp"
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+#include <cassert>
 
 auto MeshImporter::fBf() noexcept -> void
 {
@@ -11,13 +14,14 @@ auto MeshImporter::fBf() noexcept -> void
 auto MeshImporter::lFl(std::string_view t_fp, std::vector<Mesh>& t_mhs) noexcept -> void
 {
     Assimp::Importer importer;
-    const aiScene *scene = importer.ReadFile(t_fp.data(), aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals);
+    const aiScene *scene = importer.ReadFile(t_fp.data(), aiProcess_Triangulate | aiProcess_GenNormals);
 
     while (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
         std::printf("%s\n", importer.GetErrorString());
         std::this_thread::sleep_for(std::chrono::milliseconds(250));
     }
 
+    dir = t_fp.substr(0, t_fp.find_last_of('/'));
     this->pN(scene->mRootNode, scene, t_mhs);
 }
 
@@ -41,30 +45,36 @@ auto MeshImporter::pM(aiMesh* t_m, const aiScene* t_s) noexcept -> Mesh
     std::vector<arln::u32> ixv;
     vxv.reserve(t_m->mNumVertices);
 
-    for (unsigned int i = 0; i < t_m->mNumVertices; ++i)
-    {
+    for (arln::u32 i = 0; i < t_m->mNumVertices; ++i) {
         vxv.emplace_back(Vertex{
             .vx = t_m->mVertices[i].x, .vy = t_m->mVertices[i].y, .vz = t_m->mVertices[i].z,
-            .nx = arln::u8(t_m->mNormals[i].x * 127.f + 127.5f),
-            .ny = arln::u8(t_m->mNormals[i].y * 127.f + 127.5f),
-            .nz = arln::u8(t_m->mNormals[i].z * 127.f + 127.5f),
+            .nx = static_cast<arln::u8>(t_m->mNormals[i].x * 127.f + 127.5f),
+            .ny = static_cast<arln::u8>(t_m->mNormals[i].y * 127.f + 127.5f),
+            .nz = static_cast<arln::u8>(t_m->mNormals[i].z * 127.f + 127.5f),
             .u = t_m->mTextureCoords[0] ? t_m->mTextureCoords[0][i].x : 0.f,
             .v = t_m->mTextureCoords[0] ? t_m->mTextureCoords[0][i].y : 0.f
         });
     }
 
-
-    for (unsigned int i = 0; i < t_m->mNumFaces; ++i)
+    for (arln::u32 i = 0; i < t_m->mNumFaces; ++i)
     {
         aiFace face = t_m->mFaces[i];
         for (unsigned int j = 0; j < face.mNumIndices; ++j)
             ixv.emplace_back(face.mIndices[j]);
     }
 
-    return oM(vxv, ixv);
+    std::vector<Texture> difM;
+
+    if (t_m->mMaterialIndex >= 0)
+    {
+        auto mt = t_s->mMaterials[t_m->mMaterialIndex];
+        difM = lT(mt, aiTextureType_DIFFUSE, "texture_diffuse");
+    }
+
+    return oM(vxv, ixv, difM);
 }
 
-auto MeshImporter::oM(std::vector<Vertex>& t_vxv, std::vector<arln::u32>& t_ixv) noexcept -> Mesh
+auto MeshImporter::oM(std::vector<Vertex>& t_vxv, std::vector<arln::u32>& t_ixv, std::vector<Texture>& t_txs) noexcept -> Mesh
 {
     auto vs = t_vxv.size();
     auto is = t_ixv.size();
@@ -115,6 +125,62 @@ auto MeshImporter::oM(std::vector<Vertex>& t_vxv, std::vector<arln::u32>& t_ixv)
         .vxo = vxo,
         .ixo = ixo,
         .ctr = ctr,
-        .rad = rad
+        .rad = rad,
+        .txs = t_txs
     };
+}
+
+auto MeshImporter::lT(aiMaterial* t_mt, aiTextureType t_ty, std::string_view t_tn) noexcept -> std::vector<Texture>
+{
+    std::vector<Texture> txs;
+
+    for (unsigned int i = 0; i < t_mt->GetTextureCount(t_ty); i++)
+    {
+        aiString str;
+        t_mt->GetTexture(t_ty, i, &str);
+
+        bool s = false;
+        for (unsigned int j = 0; j < m_tLds.size(); j++)
+        {
+            if (std::strcmp(m_tLds[j].pt.data(), str.C_Str()) == 0) {
+                txs.push_back(m_tLds[j]);
+                s = true;
+                break;
+            }
+        }
+        if (!s) {
+            Texture texture;
+            texture.id = this->lI(str.C_Str());
+            texture.ty = t_tn;
+            texture.pt = str.C_Str();
+            txs.push_back(texture);
+            m_tLds.push_back(texture);
+        }
+    }
+    return txs;
+}
+
+auto MeshImporter::lI(std::string_view t_fp) noexcept -> arln::u32
+{
+    auto id = static_cast<arln::u32>(m_txs.size());
+
+    arln::i32 w, h, c;
+    auto fp = (dir + '/' + t_fp.data());
+    arln::u8* b = stbi_load(fp.c_str(), &w, &h, &c, STBI_rgb_alpha);
+
+    assert(b);
+
+    auto& tx = m_txs.emplace_back(
+        arln::CurrentContext()->allocateImage((arln::u32)w, (arln::u32)h, arln::Format::eR8G8B8A8Unorm, arln::ImageUsageBits::eSampled, arln::MemoryType::eGpuOnly)
+    );
+
+    {
+        using namespace arln;
+        tx.transition(ImageLayout::eUndefined, ImageLayout::eTransferDst, PipelineStageBits::eTopOfPipe, PipelineStageBits::eTransfer, 0, AccessBits::eTransferWrite);
+        tx.writeToImage(b, w * h * 4, {w, h});
+        tx.transition(ImageLayout::eTransferDst, ImageLayout::eShaderReadOnly, PipelineStageBits::eTransfer,PipelineStageBits::eFragmentShader, AccessBits::eTransferWrite, AccessBits::eShaderRead);
+    }
+    stbi_image_free(b);
+
+    return id;
 }

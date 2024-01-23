@@ -21,6 +21,7 @@ public:
     arln::Buffer m_ob, m_idb;
     arln::Pipeline m_gp{};
     arln::u32 m_dc{};
+    arln::Sampler m_smp;
     Sky m_sky;
     Physics m_phx;
     MeshImporter m_mshImp;

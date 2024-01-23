@@ -82,7 +82,7 @@ auto Renderer::drF(Scene& t_rnS) noexcept -> v0 {
         m_cmd.beginRendering(arln::RenderingInfo{
             .pColorAttachment = &cAtt, .pDepthAttachment = &dAtt
         });
-        //t_rnS.m_sky.r(m_cmd, t_rnS.cam);
+        t_rnS.m_sky.r(m_cmd, t_rnS.cam);
         glm::mat4 pc[2] = {
             t_rnS.cam.gP(),
             t_rnS.cam.gV()

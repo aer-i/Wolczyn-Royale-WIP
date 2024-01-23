@@ -19,22 +19,24 @@ auto Scene::u() noexcept -> v0 {
 auto Scene::pmd() noexcept -> v0
 {
     this->lMdl("../../assets/backpack/backpack.obj", glm::vec3{0.f, 2.f, 0.f});
-    this->lMdl("../../assets/sponza.glb", {}, {}, glm::vec3{0.03f});
+    //this->lMdl("../../assets/sponza.glb", {}, {}, glm::vec3{0.03f});
 }
 
 auto Scene::pr() noexcept -> v0
 {
+    m_smp = arln::CurrentContext()->createSampler();
     m_dp = arln::CurrentContext()->createDescriptorPool();
     m_ds = m_dp.addBinding(0, arln::DescriptorType::eStorageBuffer, arln::ShaderStageBits::eVertex)
         .addBinding(1, arln::DescriptorType::eStorageBuffer, arln::ShaderStageBits::eVertex)
+        .addBinding(2, arln::DescriptorType::eCombinedImageSampler, arln::ShaderStageBits::eFragment)
         .createDescriptor();
 
     std::vector<WD> wds;
-    for (auto & m_ml : m_mls) {
+    for (auto& m_ml : m_mls) {
         for (auto& m : m_ml.mhs) {
             wds.emplace_back(WD{
                 .mtx = m_ml.gMtx(),
-                .mi = m_ml.mtID
+                .mi = m.txs.back().id
             });
         }
     }
@@ -54,10 +56,16 @@ auto Scene::pr() noexcept -> v0
     vs.destroy();
     m_mshImp.fBf();
 
-    arln::DescriptorWriter()
+    arln::DescriptorWriter wr;
+    wr
         .addBuffer(m_ds, m_mshImp.gVb(), 0, arln::DescriptorType::eStorageBuffer)
-        .addBuffer(m_ds, m_ob, 1, arln::DescriptorType::eStorageBuffer)
-        .write();
+        .addBuffer(m_ds, m_ob, 1, arln::DescriptorType::eStorageBuffer);
+
+    for (arln::u32 i{}; i < m_mshImp.m_txs.size(); ++i) {
+        wr.addImage(m_ds, m_mshImp.m_txs[i], m_smp, 2, arln::DescriptorType::eCombinedImageSampler, i);
+    }
+    wr.write();
+    wr.clear();
 
     gIdb();
 }
