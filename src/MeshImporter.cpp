@@ -61,21 +61,49 @@ auto MeshImporter::pM(aiMesh* t_m, const aiScene* t_s) noexcept -> Mesh
             ixv.emplace_back(face.mIndices[j]);
     }
 
-    auto ic = static_cast<arln::u32>(ixv.size());
+    return oM(vxv, ixv);
+}
+
+auto MeshImporter::oM(std::vector<Vertex>& t_vxv, std::vector<arln::u32>& t_ixv) noexcept -> Mesh
+{
+    auto vs = t_vxv.size();
+    auto is = t_ixv.size();
+
+    std::vector<arln::u32> rem(is);
+    auto ovc = meshopt_generateVertexRemap(rem.data(), t_ixv.data(), is, t_vxv.data(), vs, sizeof(Vertex));
+
+    std::vector<Vertex> vx(ovc);
+    std::vector<arln::u32> ix(is);
+
+    meshopt_remapIndexBuffer(ix.data(), t_ixv.data(), is, rem.data());
+    meshopt_remapVertexBuffer(vx.data(), t_vxv.data(), vs, sizeof(Vertex), rem.data());
+
+    meshopt_optimizeVertexCache(ix.data(), ix.data(), is, ovc);
+    meshopt_optimizeOverdraw(ix.data(), ix.data(), is, &vx[0].vx, ovc, sizeof(Vertex), 1.05f);
+    meshopt_optimizeVertexFetch(vx.data(), ix.data(), is, vx.data(), ovc, sizeof(Vertex));
+
+    constexpr arln::f32 thr = 0.5f;
+    constexpr arln::f32 ter = 0.2f;
+    auto tix = static_cast<size_t>((arln::f32)is * thr);
+    std::vector<arln::u32> six(ix.size());
+    auto oic = meshopt_simplify(six.data(), ix.data(), is, &vx[0].vx, ovc, sizeof(Vertex), tix, ter);
+    six.resize(oic);
+
+    auto ic = static_cast<arln::u32>(six.size());
     auto vxo = static_cast<arln::i32>(m_vts.size());
     auto ixo = static_cast<arln::u32>(m_ixs.size());
-    m_vts.insert(m_vts.end(), vxv.begin(), vxv.end());
-    m_ixs.insert(m_ixs.end(), ixv.begin(), ixv.end());
+    m_vts.insert(m_vts.end(), vx.begin(), vx.end());
+    m_ixs.insert(m_ixs.end(), six.begin(), six.end());
 
     glm::vec3 ctr{};
     arln::f32 rad{};
 
-    for (auto& v : vxv) {
+    for (auto& v : vx) {
         ctr += glm::vec3(v.vx, v.vy, v.vz);
     }
     ctr /= arln::f32(ic);
 
-    for (auto& v : vxv){
+    for (auto& v : vx){
         rad = std::max(rad, glm::distance(ctr, glm::vec3(v.vx, v.vy, v.vz)));
     }
 

@@ -19,6 +19,7 @@ public:
 private:
     auto pN(aiNode* t_n, aiScene const* t_s, std::vector<Mesh>& t_mhs) noexcept -> v0;
     auto pM(aiMesh* t_m, aiScene const* t_s) noexcept -> Mesh;
+    auto oM(std::vector<Vertex>& t_vxv, std::vector<arln::u32>& t_ixv) noexcept -> Mesh;
 public:
     arln::Buffer m_vb, m_ib;
     std::vector<Vertex> m_vts;
