@@ -19,7 +19,7 @@ auto Scene::u() noexcept -> v0 {
 auto Scene::pmd() noexcept -> v0
 {
     this->lMdl("../../assets/backpack/backpack.obj", glm::vec3{0.f, 2.f, 0.f});
-    //this->lMdl("../../assets/sponza.glb", {}, {}, glm::vec3{0.03f});
+    this->lMdl("../../assets/sponza.glb", {}, {}, glm::vec3{0.03f});
 }
 
 auto Scene::pr() noexcept -> v0
@@ -28,7 +28,7 @@ auto Scene::pr() noexcept -> v0
     m_dp = arln::CurrentContext()->createDescriptorPool();
     m_ds = m_dp.addBinding(0, arln::DescriptorType::eStorageBuffer, arln::ShaderStageBits::eVertex)
         .addBinding(1, arln::DescriptorType::eStorageBuffer, arln::ShaderStageBits::eVertex)
-        .addBinding(2, arln::DescriptorType::eCombinedImageSampler, arln::ShaderStageBits::eFragment)
+        .addBinding(2, arln::DescriptorType::eCombinedImageSampler, arln::ShaderStageBits::eFragment, 64)
         .createDescriptor();
 
     std::vector<WD> wds;

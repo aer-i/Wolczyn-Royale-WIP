@@ -14,32 +14,32 @@ auto MeshImporter::fBf() noexcept -> void
 auto MeshImporter::lFl(std::string_view t_fp, std::vector<Mesh>& t_mhs) noexcept -> void
 {
     Assimp::Importer importer;
-    const aiScene *scene = importer.ReadFile(t_fp.data(), aiProcess_Triangulate | aiProcess_GenNormals);
+    m_cs = (aiScene*)importer.ReadFile(t_fp.data(), aiProcess_Triangulate | aiProcess_GenNormals);
 
-    while (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+    while (!m_cs || m_cs->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !m_cs->mRootNode) {
         std::printf("%s\n", importer.GetErrorString());
         std::this_thread::sleep_for(std::chrono::milliseconds(250));
     }
 
     dir = t_fp.substr(0, t_fp.find_last_of('/'));
-    this->pN(scene->mRootNode, scene, t_mhs);
+    this->pN(m_cs->mRootNode, t_mhs);
 }
 
-auto MeshImporter::pN(aiNode* t_n, aiScene const* t_s, std::vector<Mesh>& t_mhs) noexcept -> v0
+auto MeshImporter::pN(aiNode* t_n, std::vector<Mesh>& t_mhs) noexcept -> v0
 {
     for (unsigned int i = 0; i < t_n->mNumMeshes; i++)
     {
-        aiMesh* mesh = t_s->mMeshes[t_n->mMeshes[i]];
-        t_mhs.emplace_back(this->pM(mesh, t_s));
+        aiMesh* mesh = m_cs->mMeshes[t_n->mMeshes[i]];
+        t_mhs.emplace_back(this->pM(mesh));
     }
 
     for (unsigned int i = 0; i < t_n->mNumChildren; i++)
     {
-        this->pN(t_n->mChildren[i], t_s, t_mhs);
+        this->pN(t_n->mChildren[i], t_mhs);
     }
 }
 
-auto MeshImporter::pM(aiMesh* t_m, const aiScene* t_s) noexcept -> Mesh
+auto MeshImporter::pM(aiMesh* t_m) noexcept -> Mesh
 {
     std::vector<Vertex> vxv;
     std::vector<arln::u32> ixv;
@@ -67,7 +67,7 @@ auto MeshImporter::pM(aiMesh* t_m, const aiScene* t_s) noexcept -> Mesh
 
     if (t_m->mMaterialIndex >= 0)
     {
-        auto mt = t_s->mMaterials[t_m->mMaterialIndex];
+        auto mt = m_cs->mMaterials[t_m->mMaterialIndex];
         difM = lT(mt, aiTextureType_DIFFUSE, "texture_diffuse");
     }
 
@@ -140,21 +140,22 @@ auto MeshImporter::lT(aiMaterial* t_mt, aiTextureType t_ty, std::string_view t_t
         t_mt->GetTexture(t_ty, i, &str);
 
         bool s = false;
-        for (unsigned int j = 0; j < m_tLds.size(); j++)
-        {
-            if (std::strcmp(m_tLds[j].pt.data(), str.C_Str()) == 0) {
-                txs.push_back(m_tLds[j]);
+        for (auto& m_tLd : m_tLds) {
+            if (std::strcmp(m_tLd.pt.data(), str.C_Str()) == 0) {
+                txs.emplace_back(m_tLd);
                 s = true;
                 break;
             }
         }
         if (!s) {
+            auto tx = m_cs->GetEmbeddedTexture(str.C_Str());
             Texture texture;
-            texture.id = this->lI(str.C_Str());
+            if (tx) texture.id = this->lIb(tx->pcData, tx->mWidth, tx->mHeight);
+            else    texture.id = this->lI(str.C_Str());
             texture.ty = t_tn;
             texture.pt = str.C_Str();
-            txs.push_back(texture);
-            m_tLds.push_back(texture);
+            txs.emplace_back(texture);
+            m_tLds.emplace_back(texture);
         }
     }
     return txs;
@@ -174,13 +175,49 @@ auto MeshImporter::lI(std::string_view t_fp) noexcept -> arln::u32
         arln::CurrentContext()->allocateImage((arln::u32)w, (arln::u32)h, arln::Format::eR8G8B8A8Unorm, arln::ImageUsageBits::eSampled, arln::MemoryType::eGpuOnly)
     );
 
-    {
+    using namespace arln;
+    tx.transition(ImageLayout::eUndefined, ImageLayout::eTransferDst, PipelineStageBits::eTopOfPipe, PipelineStageBits::eTransfer, 0, AccessBits::eTransferWrite);
+    tx.writeToImage(b, w * h * 4, {w, h});
+    tx.transition(ImageLayout::eTransferDst, ImageLayout::eShaderReadOnly, PipelineStageBits::eTransfer,PipelineStageBits::eFragmentShader, AccessBits::eTransferWrite, AccessBits::eShaderRead);
+
+    stbi_image_free(b);
+
+    return id;
+}
+
+auto MeshImporter::lIb(void* t_d, arln::u32 t_w, arln::u32 t_h) noexcept -> arln::u32
+{
+    auto id = static_cast<arln::u32>(m_txs.size());
+
+    assert(t_d);
+
+    if (!t_h) {
+        arln::i32 w, h, c;
+        auto d = stbi_load_from_memory((stbi_uc const*)t_d, (arln::i32)t_w, &w, &h, &c, STBI_rgb_alpha);
+
+        assert(d);
+
+        auto& tx = m_txs.emplace_back(
+            arln::CurrentContext()->allocateImage((arln::u32)w, (arln::u32)h, arln::Format::eR8G8B8A8Unorm, arln::ImageUsageBits::eSampled, arln::MemoryType::eGpuOnly)
+        );
+
         using namespace arln;
         tx.transition(ImageLayout::eUndefined, ImageLayout::eTransferDst, PipelineStageBits::eTopOfPipe, PipelineStageBits::eTransfer, 0, AccessBits::eTransferWrite);
-        tx.writeToImage(b, w * h * 4, {w, h});
+        tx.writeToImage(d, w * h * 4, {w, h});
+        tx.transition(ImageLayout::eTransferDst, ImageLayout::eShaderReadOnly, PipelineStageBits::eTransfer,PipelineStageBits::eFragmentShader, AccessBits::eTransferWrite, AccessBits::eShaderRead);
+
+        stbi_image_free(d);
+
+    } else {
+        auto& tx = m_txs.emplace_back(
+            arln::CurrentContext()->allocateImage((arln::u32)t_w, (arln::u32)t_h, arln::Format::eR8G8B8A8Unorm, arln::ImageUsageBits::eSampled, arln::MemoryType::eGpuOnly)
+        );
+
+        using namespace arln;
+        tx.transition(ImageLayout::eUndefined, ImageLayout::eTransferDst, PipelineStageBits::eTopOfPipe, PipelineStageBits::eTransfer, 0, AccessBits::eTransferWrite);
+        tx.writeToImage(t_d, t_w * t_h * 4, {t_w, t_h});
         tx.transition(ImageLayout::eTransferDst, ImageLayout::eShaderReadOnly, PipelineStageBits::eTransfer,PipelineStageBits::eFragmentShader, AccessBits::eTransferWrite, AccessBits::eShaderRead);
     }
-    stbi_image_free(b);
 
     return id;
 }
