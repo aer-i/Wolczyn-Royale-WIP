@@ -18,13 +18,16 @@ auto Scene::u() noexcept -> v0 {
 
 auto Scene::pmd() noexcept -> v0
 {
-    this->lMdl("../../assets/backpack/backpack.obj", glm::vec3{0.f, 2.f, 0.f});
-    this->lMdl("../../assets/sponza.glb", {}, {}, glm::vec3{0.03f});
+    this->lMdl("../../assets/backpack/backpack.obj", false, glm::vec3{0.f, 2.f, 0.f});
+    this->lMdl("../../assets/sponza.glb", true, {}, {}, glm::vec3{0.03f});
 }
 
 auto Scene::pr() noexcept -> v0
 {
-    m_smp = arln::CurrentContext()->createSampler();
+    m_smp = arln::CurrentContext()->createSampler(arln::SamplerOptions{
+        .magFilter = arln::Filter::eLinear,
+        .minFilter = arln::Filter::eLinear
+    });
     m_dp = arln::CurrentContext()->createDescriptorPool();
     m_ds = m_dp.addBinding(0, arln::DescriptorType::eStorageBuffer, arln::ShaderStageBits::eVertex)
         .addBinding(1, arln::DescriptorType::eStorageBuffer, arln::ShaderStageBits::eVertex)

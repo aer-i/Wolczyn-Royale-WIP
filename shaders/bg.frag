@@ -23,6 +23,9 @@ layout(set = 0, binding = 2) uniform sampler2D samplers[];
 
 void main()
 {
-    outColor = vec4(texture(samplers[fragMaterialId], fragUV).rgb, 1.0);
+    vec4 color = texture(samplers[fragMaterialId], fragUV).rgba;
+    if (color.a < 0.5f)
+        discard;
+    outColor = vec4(color.rgb, 1.0);
     //outColor = vec4(gl_FragCoord.www, 1.0);
 }

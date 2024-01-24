@@ -8,9 +8,9 @@ SceneLoader::~SceneLoader() noexcept {
     m_smp.destroy();
 }
 
-auto SceneLoader::lMdl(std::string_view t_fp, glm::vec3 const& t_pos, glm::vec3 const& t_rot, glm::vec3 const& t_scl) noexcept -> v0 {
+auto SceneLoader::lMdl(std::string_view t_fp, bool t_fuv, glm::vec3 const& t_pos, glm::vec3 const& t_rot, glm::vec3 const& t_scl) noexcept -> v0 {
     auto& m = m_mls.emplace_back();
-    m_mshImp.lFl(t_fp, m.mhs);
+    m_mshImp.lFl(t_fp, m.mhs, t_fuv);
     m.pos = t_pos;
     m.rot = t_rot;
     m.scl = t_scl;

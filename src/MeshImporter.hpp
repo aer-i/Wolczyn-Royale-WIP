@@ -9,10 +9,10 @@
 class MeshImporter {
     using v0 = void;
 public:
-    MeshImporter() = default;
+    MeshImporter() noexcept;
     inline ~MeshImporter() noexcept { m_vb.free(); m_ib.free(); for(auto& t : m_txs) t.free(); }
     auto fBf() noexcept -> v0;
-    auto lFl(std::string_view t_fp, std::vector<Mesh>& t_mhs) noexcept -> v0;
+    auto lFl(std::string_view t_fp, std::vector<Mesh>& t_mhs, bool t_fuv) noexcept -> v0;
 public:
     inline auto& gVb() noexcept { return m_vb; }
     inline auto& gIb() noexcept { return m_ib; }
@@ -26,7 +26,7 @@ private:
 public:
     aiScene* m_cs{};
     arln::Buffer m_vb, m_ib;
-    std::string dir;
+    std::string m_dir;
     std::vector<Vertex> m_vts;
     std::vector<arln::u32> m_ixs;
     std::vector<arln::Image> m_txs;

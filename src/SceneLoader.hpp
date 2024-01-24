@@ -13,7 +13,7 @@ public:
     SceneLoader() = default;
     ~SceneLoader() noexcept;
 protected:
-    auto lMdl(std::string_view t_fp, glm::vec3 const& t_pos = {}, glm::vec3 const& t_rot = {}, glm::vec3 const& t_scl = glm::vec3{1.f}) noexcept -> v0;
+    auto lMdl(std::string_view t_fp, bool t_fuv = false, glm::vec3 const& t_pos = {}, glm::vec3 const& t_rot = {}, glm::vec3 const& t_scl = glm::vec3{1.f}) noexcept -> v0;
     auto gIdb() noexcept -> v0;
 public:
     arln::DescriptorPool m_dp;
