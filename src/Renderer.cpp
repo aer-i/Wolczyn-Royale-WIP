@@ -73,7 +73,7 @@ auto Renderer::drF(Scene& t_rnS) noexcept -> v0 {
                 .srcAccessMask = arln::AccessBits::eNone, .dstAccessMask = arln::AccessBits::eColorAttachmentWrite
             }, arln::ImageTransitionInfo{
                 .image = m_dAtt,
-                .oldLayout = arln::ImageLayout::eUndefined, .newLayout = arln::ImageLayout::eDepthAttachment,
+                .oldLayout = arln::ImageLayout::eUndefined, .newLayout = arln::ImageLayout::eDepthStencilAttachment,
                 .srcStageMask = arln::PipelineStageBits::eLateFragmentTests | arln::PipelineStageBits::eEarlyFragmentTests,
                 .dstStageMask = arln::PipelineStageBits::eLateFragmentTests | arln::PipelineStageBits::eEarlyFragmentTests,
                 .srcAccessMask = arln::AccessBits::eNone, .dstAccessMask = arln::AccessBits::eDepthStencilAttachmentWrite
